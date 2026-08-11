@@ -53,3 +53,21 @@ interface chains valid generic dependencies.
 - A16 post-integration baseline: `vendor/interfaces@f0f2718`
 - Patch SHA-256: `2567cf092bc7a58581f63f21a9d056f5cafc479b37e3c7c9fa460106da0ab2f9`
 - Validation target: A16 `aosp_shared_system_image` generic dependency closure
+
+## 9001 — Drop removed overlay helper packages
+
+The A16 hardware-overlay repository still listed `HardwareOverlayPicker` and Qualcomm-only `QtiAudio`, but no
+modules with those names exist. The patch removes those two entries while retaining TrebleApp and every overlay.
+
+- Patch: `patches_treble/vendor_hardware_overlay/9001-Drop-removed-overlay-helper-packages.patch`
+- A16 baseline: `vendor/hardware_overlay@bb0bbb9`
+- Patch SHA-256: `a02007bb03a075701751d4f8fbda7af0f78e16a42e67dc807e71127ef2dd3b64`
+
+## 9020 — Drop removed vr_hwc and healthd packages
+
+Android 16 no longer defines the legacy `vr_hwc` and `healthd` modules. The patch removes those two package
+entries from TrebleDroid `base.mk` while retaining `curl` and all other base packages.
+
+- Patch: `patches_treble/device_phh_treble/9020-Drop-removed-vr_hwc-and-healthd-packages.patch`
+- A16 post-integration baseline: `device/phh/treble@afbe768`
+- Patch SHA-256: `1e8b48411d9df8b7b49d17ee188e4fe84f20323b69a1da556d530130bafff1b1`

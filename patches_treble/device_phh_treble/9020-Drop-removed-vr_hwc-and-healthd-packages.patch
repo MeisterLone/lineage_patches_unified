@@ -1,0 +1,31 @@
+From f4a6ff2582604a806a5a1584d9bdc7fd54ecfe69 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 17:10:39 +0000
+Subject: [PATCH] treble: Drop removed vr_hwc and healthd packages
+
+Android 16 no longer defines these legacy modules. Preserve curl and the remaining TrebleDroid base packages.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ base.mk | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/base.mk b/base.mk
+index 4175aaf..e4d4b85 100644
+--- a/base.mk
++++ b/base.mk
+@@ -201,9 +201,7 @@ PRODUCT_PACKAGES += \
+     android.hardware.biometrics.fingerprint@2.1-service.oplus.compat \
+ 
+ PRODUCT_PACKAGES += \
+-    vr_hwc \
+     curl \
+-    healthd \
+ 
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+     debug.fdsan=warn_once \
+-- 
+2.43.0
+

@@ -1,0 +1,28 @@
+From c939e5dd253569ea7da917e9e89c7de57991cb19 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 17:10:39 +0000
+Subject: [PATCH] treble: Drop removed overlay helper packages
+
+HardwareOverlayPicker and QtiAudio are absent from the Android 16 overlay tree. Keep TrebleApp and all runtime overlays.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ overlay.mk | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/overlay.mk b/overlay.mk
+index 59a19da..1c4ef41 100644
+--- a/overlay.mk
++++ b/overlay.mk
+@@ -1,6 +1,4 @@
+ PRODUCT_PACKAGES += \
+-	HardwareOverlayPicker \
+-	QtiAudio \
+ 	TrebleApp \
+ 	treble-overlay-Hisense-HLTE556N \
+ 	treble-overlay-NavBar \
+-- 
+2.43.0
+
