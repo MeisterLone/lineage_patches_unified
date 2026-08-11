@@ -1,0 +1,31 @@
+From dcddaa44513f20f65dda5dcc766c78fa193ae490 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 16:56:15 +0000
+Subject: [PATCH] gsi: Use Etar for Lineage calendar dependency
+
+LineageOS 23 no longer provides the AOSP Calendar module. Resolve the generic system image dependency with LineageOS Etar.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I7d224eea9e78c58fcdeabd08b4c8736c729c0a26
+---
+ target/product/gsi/Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/target/product/gsi/Android.bp b/target/product/gsi/Android.bp
+index 2f67fb60ad..10106d464a 100644
+--- a/target/product/gsi/Android.bp
++++ b/target/product/gsi/Android.bp
+@@ -179,7 +179,7 @@ android_system_image {
+ 
+         // handheld_product
+         "AvatarPicker",
+-        "Calendar",
++        "Etar",
+         "Contacts",
+         "DeskClock",
+         "Gallery2",
+-- 
+2.43.0
+

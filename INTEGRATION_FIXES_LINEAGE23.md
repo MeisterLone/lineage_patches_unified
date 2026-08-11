@@ -27,3 +27,15 @@ The patch removes only the helper's `cc_binary` module. Other TrebleDroid comman
 - A16 post-port baseline: `device/phh/treble@93ca19c`
 - Patch SHA-256: `b6256cee46387e4cc8e5519620cca3c6504213a452281b6df054fdddd6a924d8`
 - Validation: generated directly from the recorded post-port A16 baseline
+
+## 9001 — Use Etar for the Lineage calendar dependency
+
+The A16 `aosp_system_image` Soong filesystem definition requires a module named `Calendar`. LineageOS 23 no
+longer syncs AOSP Calendar and provides Etar instead; every other dependency in the filesystem module exists.
+
+The patch changes only that dependency from `Calendar` to `Etar`.
+
+- Patch: `patches_treble/build_make/9001-Use-Etar-for-Lineage-calendar-dependency.patch`
+- A16 post-port baseline: `build/make@aeeeb8898e`
+- Patch SHA-256: `6912118e7e3aa1deae9cdd9a62c4b7c1ba128485dbb73892370484543f1587f5`
+- Validation: `packages/apps/Etar/app/Android.bp` defines module `Etar`; all other `aosp_system_image` dependencies exist
