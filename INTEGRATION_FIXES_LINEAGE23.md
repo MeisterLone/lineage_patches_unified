@@ -157,3 +157,13 @@ inside that valid range.
 - Patch: `patches_treble_td/platform_frameworks_base/9030-Keep-gamma-annotation-compile-time-constant.patch`
 - A16 post-integration baseline: `frameworks/base@500731a2ba21`
 - Patch SHA-256: `dd817b1b0f57f1cf05d570e85806a0c2427614ec02627499ddd6e44f9de0049b`
+
+## 9010 — Remove stale notification-shelf dump override
+
+The platform ColorUpdateLogger revert removes `NotificationBackgroundView.toDumpString()`, while a newer A16
+`NotificationShelfBackgroundView` override remained. The patch removes that unused derived override rather than
+restoring the deliberately reverted logger API.
+
+- Patch: `patches_platform/frameworks_base/9010-Remove-stale-shelf-dump-override.patch`
+- A16 post-integration baseline: `frameworks/base@9ea2be420442`
+- Patch SHA-256: `250f9d7da7fb26cf4334e97e4f530fbdbf20bca913d628e7b2029b66ec2cdad0`
