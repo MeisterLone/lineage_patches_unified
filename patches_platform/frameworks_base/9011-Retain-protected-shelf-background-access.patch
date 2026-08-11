@@ -1,0 +1,31 @@
+From a5116f84b52eec016b0793ae99fb2350a88e0bc9 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 20:03:43 +0000
+Subject: [PATCH] SystemUI: Retain protected shelf background access
+
+A16 NotificationShelf lives outside the row package and reads the initialized superclass background. Keep protected visibility while leaving ColorUpdateLogger removed.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: If51b0d1ff33d60364392da26d5f743219a652741
+---
+ .../statusbar/notification/row/ActivatableNotificationView.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
+index 82e92d7ed97d..0be3827bca3a 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/notification/row/ActivatableNotificationView.java
+@@ -97,7 +97,7 @@ public abstract class ActivatableNotificationView extends ExpandableOutlineView
+     private boolean mActivated;
+ 
+     private Interpolator mCurrentAppearInterpolator;
+-    NotificationBackgroundView mBackgroundNormal;
++    protected NotificationBackgroundView mBackgroundNormal;
+     private float mAnimationTranslationY;
+     private boolean mDrawingAppearAnimation;
+     private ValueAnimator mAppearAnimator;
+-- 
+2.43.0
+

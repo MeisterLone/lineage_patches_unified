@@ -167,3 +167,13 @@ restoring the deliberately reverted logger API.
 - Patch: `patches_platform/frameworks_base/9010-Remove-stale-shelf-dump-override.patch`
 - A16 post-integration baseline: `frameworks/base@9ea2be420442`
 - Patch SHA-256: `250f9d7da7fb26cf4334e97e4f530fbdbf20bca913d628e7b2029b66ec2cdad0`
+
+## 9011 — Retain protected notification background access
+
+The same ColorUpdateLogger revert downgraded `ActivatableNotificationView.mBackgroundNormal` to package-private.
+A16 `NotificationShelf` lives in a different package and legitimately reads the initialized superclass field for
+short-shelf alignment. The patch retains `protected` visibility while leaving all logger code removed.
+
+- Patch: `patches_platform/frameworks_base/9011-Retain-protected-shelf-background-access.patch`
+- A16 post-integration baseline: `frameworks/base@b89d098dd5da`
+- Patch SHA-256: `3c676310da173268c2a9167a5a154e146fbdabdf90a4842992b5ce41a432a12e`
