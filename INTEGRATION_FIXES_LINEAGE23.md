@@ -222,3 +222,16 @@ with stock `863C_C10_20240619`; `ro.build.id`, A16 SDK/release/security patch, a
 - A16 post-integration baselines: `build/soong@07f8672dc`, `device/phh/treble@5692ab6`
 - Patch SHA-256: `9203b564c2f16d0280ba0137756e4b71e5314ff6be30e85407c4faddacb3f93d`
 - Patch SHA-256: `d97e12f81bb6bb25b23fa4c1f91e49af954e377187264510530368dcaa882cb7`
+
+## 9060 — Force the cgroup-v2-compatible lmkd strategy
+
+On-device A16 boot showed `lmkd` exiting cleanly every five seconds, no `/dev/socket/lmkd`, repeated ActivityManager
+connection retries, a system_server ANR, and setup/SystemUI/phone/GMS startup failures. The C10 mounts the memory
+controller on cgroup v2, but stock vendor contributes `ro.lmk.use_new_strategy=false`. A16 lmkd explicitly rejects
+the old strategy on cgroup v2, and its vmpressure fallback requires cgroup v1. The patch overrides early system
+defaults to `ro.lmk.use_new_strategy=true` and `ro.lmk.use_psi=true`; the kernel exposes PSI and cgroup v2.
+
+- Patch: `patches_treble/device_phh_treble/9060-Force-cgroup-v2-compatible-lmkd-strategy.patch`
+- A16 post-integration baseline: `device/phh/treble@5692ab6`
+- Patch SHA-256: `9ee9bbda740c350b8aab520f4b65a9f99ab5d5944c94a96d0e908826e6d02e74`
+- Runtime acceptance: `init.svc.lmkd=running`, `/dev/socket/lmkd` present, no retry storm/AMS lock ANR

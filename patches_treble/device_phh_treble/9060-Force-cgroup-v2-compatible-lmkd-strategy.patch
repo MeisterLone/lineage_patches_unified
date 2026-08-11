@@ -1,0 +1,30 @@
+From cdcfca5f69d030c0efc46c3de7f5e8e5a65eeb11 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 23:35:14 +0000
+Subject: [PATCH] treble: Force cgroup v2 compatible lmkd strategy
+
+Stock vendor sets ro.lmk.use_new_strategy=false, but A16 lmkd rejects the old strategy on the C10 cgroup v2 hierarchy and exits repeatedly. Override it with the PSI new strategy from early system defaults.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ base.mk | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/base.mk b/base.mk
+index e4d4b85..589762c 100644
+--- a/base.mk
++++ b/base.mk
+@@ -40,6 +40,8 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+     ro.build.version.release=$(PLATFORM_VERSION) \
+     ro.build.version.security_patch=$(PLATFORM_SECURITY_PATCH) \
+     ro.adb.secure=0 \
++    ro.lmk.use_new_strategy=true \
++    ro.lmk.use_psi=true \
+     ro.logd.auditd=true \
+     ro.logd.kernel=true \
+ 
+-- 
+2.43.0
+
