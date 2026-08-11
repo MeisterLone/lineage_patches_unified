@@ -1,0 +1,39 @@
+From d9c795ed80d46c376b8e16c389a2e01ad19d6a43 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 21:07:29 +0000
+Subject: [PATCH] treble: Complete C10 merged-partition identity
+
+Override both A16 system and product property-generator inputs so system, product, and system_ext consistently expose the researched retail FancyDay C10 identity without renaming the build target.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ generate.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/generate.sh b/generate.sh
+index be11469..57b3b59 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -108,7 +108,7 @@ PRODUCT_SYSTEM_BRAND := FancyDay
+ PRODUCT_SYSTEM_MANUFACTURER := FancyDay
+ PRODUCT_SYSTEM_DEVICE := C10
+ PRODUCT_SYSTEM_NAME := C10US
+-# PRODUCT_SYSTEM_MODEL defaults to PRODUCT_MODEL, i.e. ro.product.system.model=C10.
++PRODUCT_SYSTEM_MODEL := C10
+ # The properties below are emitted with "?=" by build/soong/scripts/gen_build_prop.py,
+ # so a plain assignment overrides them cleanly.
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.build.fingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys ro.system.build.fingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys ro.build.display.id=863C_C10_20240619
+@@ -117,7 +117,7 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.build.fingerprint=FancyDay/C10US/C10:14/
+ # PRIVATE_BUILD_DESC make gen_build_prop.py exit with "isn't a valid prop override".
+ # BuildDesc must stay last: its value contains spaces and is rejoined from the words
+ # that follow it.
+-PRODUCT_BUILD_PROP_OVERRIDES += BuildFingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys BuildDesc="a523_y83_arm64-user 14 UP1A.231105.001.A1 20240316 release-keys"
++PRODUCT_BUILD_PROP_OVERRIDES += SystemBrand=FancyDay SystemManufacturer=FancyDay SystemModel=C10 SystemDevice=C10 SystemName=C10US ProductBrand=FancyDay ProductManufacturer=FancyDay ProductModel=C10 DeviceName=C10 DeviceProduct=C10US BuildFingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys BuildDesc="a523_y83_arm64-user 14 UP1A.231105.001.A1 20240316 release-keys"
+ 
+ PRODUCT_PACKAGES += $extra_packages
+ 
+-- 
+2.43.0
+

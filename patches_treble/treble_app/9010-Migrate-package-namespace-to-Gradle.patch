@@ -1,0 +1,42 @@
+From 1c417da002e164cf46c2ca471bd6030bc40b8905 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 21:04:28 +0000
+Subject: [PATCH] TrebleApp: Migrate package namespace to Gradle
+
+Declare the source namespace in app/build.gradle and remove the deprecated manifest package attribute while preserving applicationId me.phh.treble.app.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ app/build.gradle                 | 1 +
+ app/src/main/AndroidManifest.xml | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/build.gradle b/app/build.gradle
+index 4c3e6dd..1d8a0c5 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
+ apply plugin: 'kotlin-android'
+ 
+ android {
++    namespace "me.phh.treble.app"
+     compileSdkVersion 33
+     defaultConfig {
+         applicationId "me.phh.treble.app"
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 25d3277..c733b90 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
+-    package="me.phh.treble.app"
+     android:persistent="true"
+     android:sharedUserId="android.uid.system">
+ 
+-- 
+2.43.0
+

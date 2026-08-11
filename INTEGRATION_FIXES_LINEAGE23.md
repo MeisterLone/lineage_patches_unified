@@ -187,3 +187,24 @@ semantics.
 - Patch: `patches_treble/vendor_magisk/9001-Use-public-alignment-builtin.patch`
 - A16 baseline: `vendor/magisk@d8056f8`
 - Patch SHA-256: `d445f5cd9d047857f773d0c5a0999b9a065e8e98f853c9a81f3411985677c58a`
+
+## 9040 — Complete C10 merged-partition identity
+
+Static inspection of the signed image found `ro.product.system.model=mainline` and generic Google/unknown/tdgsi
+identity values in merged `product` and `system_ext`. The patch sets `PRODUCT_SYSTEM_MODEL` explicitly and uses
+valid A16 `PRODUCT_BUILD_PROP_OVERRIDES` `System*` and `Product*` generator inputs so system, product, and system_ext
+all expose the researched retail brand, manufacturer, model, device, and name without renaming the lunch target.
+
+- Patch: `patches_treble/device_phh_treble/9040-Complete-C10-merged-partition-identity.patch`
+- A16 post-integration baseline: `device/phh/treble@e6dfd65`
+- Patch SHA-256: `f16c5f324c3916de657e0c07e1c6d0e1cd279c5a668fdf11192d15efdbcea17a`
+
+## 9010 — Migrate TrebleApp package namespace to Gradle
+
+AGP 7.4 warns that source namespace must no longer come from the manifest `package` attribute. The patch declares
+`namespace "me.phh.treble.app"` in `app/build.gradle` and removes only the deprecated manifest attribute;
+`applicationId`, shared UID, permissions, and runtime package remain unchanged.
+
+- Patch: `patches_treble/treble_app/9010-Migrate-package-namespace-to-Gradle.patch`
+- A16 post-port baseline: `treble_app@c1e1029`
+- Patch SHA-256: `5f11466e4115172c80db47d3d8896d7fea35071d3c3b9e1226bdad81df0b16fd`
