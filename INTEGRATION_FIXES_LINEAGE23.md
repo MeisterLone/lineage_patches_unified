@@ -177,3 +177,13 @@ short-shelf alignment. The patch retains `protected` visibility while leaving al
 - Patch: `patches_platform/frameworks_base/9011-Retain-protected-shelf-background-access.patch`
 - A16 post-integration baseline: `frameworks/base@b89d098dd5da`
 - Patch SHA-256: `3c676310da173268c2a9167a5a154e146fbdabdf90a4842992b5ce41a432a12e`
+
+## 9001 — Use the public alignment builtin in resetprop
+
+The pinned `vendor/magisk` resetprop copy uses private bionic macro `__BIONIC_ALIGN`, which Android 16 no longer
+exports to this vendor source. The patch uses Clang `__builtin_align_up` with the same power-of-two alignment
+semantics.
+
+- Patch: `patches_treble/vendor_magisk/9001-Use-public-alignment-builtin.patch`
+- A16 baseline: `vendor/magisk@d8056f8`
+- Patch SHA-256: `d445f5cd9d047857f773d0c5a0999b9a065e8e98f853c9a81f3411985677c58a`
