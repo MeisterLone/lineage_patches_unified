@@ -83,3 +83,21 @@ unconditional wildcard fallback remain unchanged.
 - Patch: `patches_treble_td/platform_frameworks_native/9010-Remove-dead-GLES-suffix-failure-state.patch`
 - A16 post-port baseline: `frameworks/native@517360ceeb`
 - Patch SHA-256: `2432273fbb39cdf2efad4b2623d9ec9d8dd8210ee41f0fa93116685b9d33ff28`
+
+## 9020 — Use the A16 camera open API
+
+The alternate-primary-camera compatibility patch called the removed one-argument `Camera` constructor. Android 16
+requires context and rotation compatibility metadata through the public `open(int)` path.
+
+- Patch: `patches_treble_td/platform_frameworks_base/9020-Use-A16-open-API-for-alternate-primary-camera.patch`
+- A16 post-port baseline: `frameworks/base@937d8959904c`
+- Patch SHA-256: `dae45d01f882cdb5d68baed294103a2a9467342e65f9bfda8f99ddca0423bf70`
+
+## 9020 — Adapt restored telephony logs to A16 symbols
+
+Restored legacy paths referenced the removed `Phone.LOG_TAG` and `RIL.riljLogw`. The patch uses `mLogTag` and
+A16's direct `Rlog.w(RILJ_LOG_TAG, ...)`, preserving the phone-id suffix.
+
+- Patch: `patches_treble_td/platform_frameworks_opt_telephony/9020-Adapt-restored-logs-to-A16-symbols.patch`
+- A16 post-port baseline: `frameworks/opt/telephony@a509088702`
+- Patch SHA-256: `c989fb5d855f9fd12b5fddfabc7462aa8725091fc5de7384c67248e9e79e72b9`

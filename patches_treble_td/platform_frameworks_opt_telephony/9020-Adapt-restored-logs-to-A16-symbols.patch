@@ -1,0 +1,49 @@
+From c770596bbd8e19cc9935f5258159cb1898b94e18 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 18:00:32 +0000
+Subject: [PATCH] telephony: Adapt restored logs to A16 symbols
+
+Use the instance Phone tag and direct Rlog warning after Android 16 removed LOG_TAG and riljLogw from the affected classes.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I366f4280bb0c566f9a34ff22e85c35ddacdeec57
+---
+ src/java/com/android/internal/telephony/Phone.java | 2 +-
+ src/java/com/android/internal/telephony/RIL.java   | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/java/com/android/internal/telephony/Phone.java b/src/java/com/android/internal/telephony/Phone.java
+index caa4cba7c2..b1cbed55a7 100644
+--- a/src/java/com/android/internal/telephony/Phone.java
++++ b/src/java/com/android/internal/telephony/Phone.java
+@@ -862,7 +862,7 @@ public abstract class Phone extends Handler implements PhoneInternalInterface {
+             case EVENT_CONFIG_LCE:
+                 ar = (AsyncResult) msg.obj;
+                 if (ar.exception != null) {
+-                    Rlog.d(LOG_TAG, "config LCE service failed: " + ar.exception);
++                    Rlog.d(mLogTag, "config LCE service failed: " + ar.exception);
+                 } else {
+                     final ArrayList<Integer> statusInfo = (ArrayList<Integer>)ar.result;
+                     mLceStatus = statusInfo.get(0);
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 93582b500e..ae90bdb0e2 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -826,9 +826,10 @@ public class RIL extends BaseCommands implements CommandsInterface {
+         if ((service >= HAL_SERVICE_IMS) && !isRadioServiceSupported(service)) {
+             // Suppress the excessive logging for HAL_SERVICE_IMS when not supported.
+             if (service != HAL_SERVICE_IMS) {
+-                riljLogw("getRadioServiceProxy: " + serviceToString(service) + " for "
++                Rlog.w(RILJ_LOG_TAG, "getRadioServiceProxy: " + serviceToString(service) + " for "
+                         + HIDL_SERVICE_NAME[mPhoneId] + " is not supported\n"
+-                        + android.util.Log.getStackTraceString(new RuntimeException()));
++                        + android.util.Log.getStackTraceString(new RuntimeException())
++                        + " [PHONE" + mPhoneId + "]");
+             }
+             return mServiceProxies.get(service);
+         }
+-- 
+2.43.0
+
