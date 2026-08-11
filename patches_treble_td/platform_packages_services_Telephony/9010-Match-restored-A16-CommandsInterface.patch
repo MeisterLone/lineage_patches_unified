@@ -1,0 +1,44 @@
+From 858f8860999c2e13441d58c3758190542fb82150 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 18:20:44 +0000
+Subject: [PATCH] TeleService: Match restored A16 CommandsInterface
+
+Add the A16 isRoaming parameters to the no-op FakeRil data-call/profile methods so it continues to implement CommandsInterface.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I1f7026ae17c81b831f149c70f59a36cb600bcd6a
+---
+ src/com/android/phone/FakeRil.java | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/com/android/phone/FakeRil.java b/src/com/android/phone/FakeRil.java
+index 69ef65eb5..2a9549f5a 100644
+--- a/src/com/android/phone/FakeRil.java
++++ b/src/com/android/phone/FakeRil.java
+@@ -241,6 +241,7 @@ class FakeRil extends BaseCommands {
+     public void setupDataCall(
+             int accessNetworkType,
+             DataProfile dataProfile,
++            boolean isRoaming,
+             boolean allowRoaming,
+             int reason,
+             LinkProperties linkProperties,
+@@ -474,10 +475,11 @@ class FakeRil extends BaseCommands {
+     public void getVoiceRadioTechnology(Message result) {}
+ 
+     @Override
+-    public void setInitialAttachApn(DataProfile dataProfile, Message result) {}
++    public void setInitialAttachApn(
++            DataProfile dataProfile, boolean isRoaming, Message result) {}
+ 
+     @Override
+-    public void setDataProfile(DataProfile[] dps, Message result) {}
++    public void setDataProfile(DataProfile[] dps, boolean isRoaming, Message result) {}
+ 
+     @Override
+     public void iccOpenLogicalChannel(String aid, int p2, Message response) {}
+-- 
+2.43.0
+

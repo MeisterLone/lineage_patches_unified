@@ -101,3 +101,13 @@ A16's direct `Rlog.w(RILJ_LOG_TAG, ...)`, preserving the phone-id suffix.
 - Patch: `patches_treble_td/platform_frameworks_opt_telephony/9020-Adapt-restored-logs-to-A16-symbols.patch`
 - A16 post-port baseline: `frameworks/opt/telephony@a509088702`
 - Patch SHA-256: `c989fb5d855f9fd12b5fddfabc7462aa8725091fc5de7384c67248e9e79e72b9`
+
+## 9010 — Match restored A16 CommandsInterface in FakeRil
+
+Restored legacy radio APIs changed three A16 `CommandsInterface` data methods to include `isRoaming`, while
+TeleService's no-op `FakeRil` implementation retained the old signatures. The patch adds the parameter to
+`setupDataCall`, `setInitialAttachApn`, and `setDataProfile`; behavior remains no-op.
+
+- Patch: `patches_treble_td/platform_packages_services_Telephony/9010-Match-restored-A16-CommandsInterface.patch`
+- A16 post-port baseline: `packages/services/Telephony@b6a795a66`
+- Patch SHA-256: `c58d737c5d6392f316b5383e0a23d4e04a193eb088bfcaca9210915d3885db31`
