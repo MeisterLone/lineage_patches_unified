@@ -138,3 +138,12 @@ adds no-op FakeRil implementations for IMEI, IMEISV, PDP-context list, raw/strin
 - Patch: `patches_treble_td/platform_packages_services_Telephony/9013-Add-restored-command-stubs.patch`
 - A16 post-integration baseline: `packages/services/Telephony@8608751e3`
 - Patch SHA-256: `4f2359ec6195ce2d036400dee82aab362a3879356f45e4fba1bcecd382fc34b6`
+
+## 9014 — Add restored data-failure stubs to FakeRil
+
+The restored deprecated interface includes paired PDP/data-call failure-cause methods that are absent from
+`BaseCommands`. The patch adds both no-op methods to FakeRil.
+
+- Patch: `patches_treble_td/platform_packages_services_Telephony/9014-Add-restored-data-failure-stubs.patch`
+- A16 post-integration baseline: `packages/services/Telephony@bde50960b`
+- Patch SHA-256: `5d0a4bbc559fe7e992272259c54687d3a161a9a699df9e800eb27768b4eadee0`

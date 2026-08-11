@@ -1,0 +1,35 @@
+From 2df4a373cae9b15ecb3f9991c120ec207ff7d207 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 18:59:09 +0000
+Subject: [PATCH] TeleService: Add restored data-failure stubs
+
+Implement the paired restored PDP and data-call failure-cause methods in the no-op FakeRil test implementation.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: Ic1c4be2effa486f886647a315ea828853617bffe
+---
+ src/com/android/phone/FakeRil.java | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/com/android/phone/FakeRil.java b/src/com/android/phone/FakeRil.java
+index 398350dc6..264754ddb 100644
+--- a/src/com/android/phone/FakeRil.java
++++ b/src/com/android/phone/FakeRil.java
+@@ -576,6 +576,12 @@ class FakeRil extends BaseCommands {
+     @Override
+     public void getPDPContextList(Message result) {}
+ 
++    @Override
++    public void getLastPdpFailCause(Message result) {}
++
++    @Override
++    public void getLastDataCallFailCause(Message result) {}
++
+     @Override
+     public void invokeOemRilRequestRaw(byte[] data, Message response) {}
+ 
+-- 
+2.43.0
+
