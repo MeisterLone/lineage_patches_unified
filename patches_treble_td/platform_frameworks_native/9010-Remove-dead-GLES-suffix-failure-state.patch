@@ -1,0 +1,38 @@
+From 0317a0d698050676bba01d91550256c2629dd1a7 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 17:43:03 +0000
+Subject: [PATCH] EGL: Remove dead suffix-failure state
+
+The unnamed GLES fallback is unconditional after the TD compatibility patch, so the former gating variable and assignment are unused under A16 -Werror builds.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I01be3203a0813ea2e03734eb9e97477f024b9192
+---
+ opengl/libs/EGL/Loader.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/opengl/libs/EGL/Loader.cpp b/opengl/libs/EGL/Loader.cpp
+index ed4529cb9a..ef39addf96 100644
+--- a/opengl/libs/EGL/Loader.cpp
++++ b/opengl/libs/EGL/Loader.cpp
+@@ -289,7 +289,6 @@ void* Loader::open(egl_connection_t* cnx) {
+     }
+ 
+     // Finally, try to load default driver.
+-    bool failToLoadFromDriverSuffixProperty = false;
+     if (!hnd) {
+         // Start by searching for the library name appended by the system
+         // properties of the GLES userspace driver in both locations.
+@@ -304,7 +303,6 @@ void* Loader::open(egl_connection_t* cnx) {
+             hnd = attempt_to_load_system_driver(cnx, prop.c_str(), true);
+             if (!hnd) {
+                 ALOGD("Failed to load drivers from property %s with value %s", key, prop.c_str());
+-                failToLoadFromDriverSuffixProperty = true;
+             }
+ 
+             // Abort regardless of whether subsequent properties are set, the value must be set
+-- 
+2.43.0
+

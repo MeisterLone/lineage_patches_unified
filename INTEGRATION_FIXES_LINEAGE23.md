@@ -71,3 +71,15 @@ entries from TrebleDroid `base.mk` while retaining `curl` and all other base pac
 - Patch: `patches_treble/device_phh_treble/9020-Drop-removed-vr_hwc-and-healthd-packages.patch`
 - A16 post-integration baseline: `device/phh/treble@afbe768`
 - Patch SHA-256: `1e8b48411d9df8b7b49d17ee188e4fe84f20323b69a1da556d530130bafff1b1`
+
+## 9010 — Remove dead GLES suffix-failure state
+
+The TD unnamed-GLES compatibility patch makes wildcard fallback unconditional but retained the former condition's
+state variable and assignment. Android 16 compiles `Loader.cpp` with unused-variable warnings as errors.
+
+The patch removes only the dead declaration and assignment. Property diagnostics, exact-name loading, and the
+unconditional wildcard fallback remain unchanged.
+
+- Patch: `patches_treble_td/platform_frameworks_native/9010-Remove-dead-GLES-suffix-failure-state.patch`
+- A16 post-port baseline: `frameworks/native@517360ceeb`
+- Patch SHA-256: `2432273fbb39cdf2efad4b2623d9ec9d8dd8210ee41f0fa93116685b9d33ff28`
