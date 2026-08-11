@@ -1,0 +1,29 @@
+From 1c08630e3c3b511df862e2bd5384f36095e73dd6 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 23:43:28 +0000
+Subject: [PATCH] treble: Start adbd rooted by default
+
+Set service.adb.root in early system defaults so the debuggable A16 GSI boots with USB adbd as root, matching the enabled Lineage policy.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ base.mk | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/base.mk b/base.mk
+index 589762c..c7cd915 100644
+--- a/base.mk
++++ b/base.mk
+@@ -40,6 +40,7 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+     ro.build.version.release=$(PLATFORM_VERSION) \
+     ro.build.version.security_patch=$(PLATFORM_SECURITY_PATCH) \
+     ro.adb.secure=0 \
++    service.adb.root=1 \
+     ro.lmk.use_new_strategy=true \
+     ro.lmk.use_psi=true \
+     ro.logd.auditd=true \
+-- 
+2.43.0
+

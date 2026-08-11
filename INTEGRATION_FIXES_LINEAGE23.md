@@ -235,3 +235,28 @@ defaults to `ro.lmk.use_new_strategy=true` and `ro.lmk.use_psi=true`; the kernel
 - A16 post-integration baseline: `device/phh/treble@5692ab6`
 - Patch SHA-256: `9ee9bbda740c350b8aab520f4b65a9f99ab5d5944c94a96d0e908826e6d02e74`
 - Runtime acceptance: `init.svc.lmkd=running`, `/dev/socket/lmkd` present, no retry storm/AMS lock ANR
+
+## 9002 — Emit an explicit build display ID verbatim
+
+The first display-ID override generated `863C_C10_20240619 test-keys` because A16 appends build-key tags. The
+follow-up makes `BuildDisplayId` an exact optional override: default products retain standard AOSP formatting, while
+an explicit researched value is emitted verbatim in product (forced) and other partitions (optional).
+
+- Patch: `patches_treble/build_soong/9002-Emit-display-ID-override-verbatim.patch`
+- A16 post-integration baseline: `build/soong@fd67192b5`
+- Patch SHA-256: `d738427152d170f4b27bf0b2fe3fa6d495ca3d7071de283a26d699fa6af7612a`
+
+## 9001 + 9070 — Boot with Lineage rooted USB debugging enabled
+
+A data wipe removed the persisted `/data/adbroot/enabled` choice, so Lineage rejected `adb root` even though the GSI
+is userdebug and Magisk daemon persisted. The ADB module patch defaults the fresh-data policy to enabled while still
+honoring a later explicit toggle. The device patch sets `service.adb.root=1` in early system defaults so adbd stays
+root from boot. This is intentionally a debug GSI and already ships `ro.adb.secure=0`.
+
+- Patches:
+  - `patches_treble/packages_modules_adb/9001-Default-rooted-debugging-enabled.patch`
+  - `patches_treble/device_phh_treble/9070-Start-adbd-rooted-by-default.patch`
+- A16 post-integration baselines: `packages/modules/adb@262cc9ad`, `device/phh/treble@2eb85af`
+- Patch SHA-256: `e63aadc20753e784d42e115e069866b8a6d8f206e217357347fd66960e67c891`
+- Patch SHA-256: `9d66ab7ab534e09e04505108b169a198496f7184f9bc27aa0752a9a1ed1ab5c3`
+- Runtime acceptance: initial `adb shell id` is uid 0; Settings rooted-debugging toggle is enabled
