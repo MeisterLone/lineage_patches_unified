@@ -120,3 +120,12 @@ no-op `FakeRil` had no implementation. The patch adds the matching no-op method.
 - Patch: `patches_treble_td/platform_packages_services_Telephony/9011-Add-restored-slot-mapping-stub.patch`
 - A16 post-integration baseline: `packages/services/Telephony@83106d157`
 - Patch SHA-256: `d9b9d23650c2c4e59187c272201b8f5d3673b5b0d78bbec53bec30f1ddac67ca`
+
+## 9012 — Add restored slot-status stub to FakeRil
+
+The paired `CommandsInterface.getIccSlotsStatus` method is also present after the legacy-radio restore. The patch
+adds its matching no-op implementation beside the slot-mapping stub.
+
+- Patch: `patches_treble_td/platform_packages_services_Telephony/9012-Add-restored-slot-status-stub.patch`
+- A16 post-integration baseline: `packages/services/Telephony@c4e3719fa`
+- Patch SHA-256: `72f4eaffe34cdda63025c4bbf075368be222f4024e9fe5cbc3085919aea3b5b8`
