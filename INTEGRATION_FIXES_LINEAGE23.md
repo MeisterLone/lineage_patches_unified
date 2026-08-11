@@ -147,3 +147,13 @@ The restored deprecated interface includes paired PDP/data-call failure-cause me
 - Patch: `patches_treble_td/platform_packages_services_Telephony/9014-Add-restored-data-failure-stubs.patch`
 - A16 post-integration baseline: `packages/services/Telephony@bde50960b`
 - Patch SHA-256: `5d0a4bbc559fe7e992272259c54687d3a161a9a699df9e800eb27768b4eadee0`
+
+## 9030 — Keep the gamma annotation compile-time constant
+
+The low-gamma patch makes `BrightnessUtils.GAMMA_SPACE_MAX` runtime-configurable (255 or 65535), so Kotlin can no
+longer evaluate it inside `@IntRange`. The patch uses static upper bound `65535L`; low-gamma runtime values remain
+inside that valid range.
+
+- Patch: `patches_treble_td/platform_frameworks_base/9030-Keep-gamma-annotation-compile-time-constant.patch`
+- A16 post-integration baseline: `frameworks/base@500731a2ba21`
+- Patch SHA-256: `dd817b1b0f57f1cf05d570e85806a0c2427614ec02627499ddd6e44f9de0049b`

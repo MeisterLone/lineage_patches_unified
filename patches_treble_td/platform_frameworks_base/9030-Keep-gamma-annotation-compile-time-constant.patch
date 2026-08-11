@@ -1,0 +1,31 @@
+From 780bb77b40d9f4b07717ef1be1def4325c1675c7 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 19:15:14 +0000
+Subject: [PATCH] SystemUI: Keep gamma annotation compile-time constant
+
+The TD low-gamma property makes GAMMA_SPACE_MAX runtime-configurable. Use the maximum valid static bound in the Kotlin IntRange annotation.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I8dd04d942ca2fd7083375bdaece44b3a5c1b385e
+---
+ .../android/systemui/brightness/shared/model/GammaBrightness.kt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/brightness/shared/model/GammaBrightness.kt b/packages/SystemUI/src/com/android/systemui/brightness/shared/model/GammaBrightness.kt
+index 7eba6268869c..acd69061f816 100644
+--- a/packages/SystemUI/src/com/android/systemui/brightness/shared/model/GammaBrightness.kt
++++ b/packages/SystemUI/src/com/android/systemui/brightness/shared/model/GammaBrightness.kt
+@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
+ value class GammaBrightness(
+     @IntRange(
+         from = BrightnessUtils.GAMMA_SPACE_MIN.toLong(),
+-        to = BrightnessUtils.GAMMA_SPACE_MAX.toLong()
++        to = 65535L
+     )
+     val value: Int
+ )
+-- 
+2.43.0
+
