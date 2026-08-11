@@ -111,3 +111,12 @@ TeleService's no-op `FakeRil` implementation retained the old signatures. The pa
 - Patch: `patches_treble_td/platform_packages_services_Telephony/9010-Match-restored-A16-CommandsInterface.patch`
 - A16 post-port baseline: `packages/services/Telephony@b6a795a66`
 - Patch SHA-256: `c58d737c5d6392f316b5383e0a23d4e04a193eb088bfcaca9210915d3885db31`
+
+## 9011 — Add restored slot-mapping stub to FakeRil
+
+`CommandsInterface.setLogicalToPhysicalSlotMapping` is present after the legacy-radio restore, while TeleService's
+no-op `FakeRil` had no implementation. The patch adds the matching no-op method.
+
+- Patch: `patches_treble_td/platform_packages_services_Telephony/9011-Add-restored-slot-mapping-stub.patch`
+- A16 post-integration baseline: `packages/services/Telephony@83106d157`
+- Patch SHA-256: `d9b9d23650c2c4e59187c272201b8f5d3673b5b0d78bbec53bec30f1ddac67ca`

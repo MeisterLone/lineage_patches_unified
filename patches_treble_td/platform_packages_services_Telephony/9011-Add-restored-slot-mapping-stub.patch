@@ -1,0 +1,32 @@
+From 2d03dd2c1ccef673a2f54a47b9dddc2f81b69220 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 18:33:27 +0000
+Subject: [PATCH] TeleService: Add restored slot-mapping stub
+
+Implement the restored A16 CommandsInterface slot mapping method in the no-op FakeRil test implementation.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I6a4055db086f4a5949257cd4ac45b92546101742
+---
+ src/com/android/phone/FakeRil.java | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/com/android/phone/FakeRil.java b/src/com/android/phone/FakeRil.java
+index 2a9549f5a..025434e35 100644
+--- a/src/com/android/phone/FakeRil.java
++++ b/src/com/android/phone/FakeRil.java
+@@ -474,6 +474,9 @@ class FakeRil extends BaseCommands {
+     @Override
+     public void getVoiceRadioTechnology(Message result) {}
+ 
++    @Override
++    public void setLogicalToPhysicalSlotMapping(int[] physicalSlots, Message result) {}
++
+     @Override
+     public void setInitialAttachApn(
+             DataProfile dataProfile, boolean isRoaming, Message result) {}
+-- 
+2.43.0
+
