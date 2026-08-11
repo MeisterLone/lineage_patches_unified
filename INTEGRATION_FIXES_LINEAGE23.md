@@ -15,3 +15,15 @@ source remains available for history, but Soong no longer attempts to resolve th
 - A16 baseline: `TrebleDroid/vendor_interfaces@a2271d260e226e8de5cb1e8c15a229dc90c007dd`
 - Patch SHA-256: `2bac28cf6a4e85615fb6d834abf94a20c6b477887f3535f4be735faa25f0151c`
 - Validation: clean `git apply --check` on the recorded A16 baseline
+
+## 9010 — Drop obsolete LGE vibrator helper
+
+After removing the interface build definition, Soong found `vibrator-lge` in `device/phh/treble/cmds/Android.bp`.
+That binary depends exclusively on the removed LGE interface and is not used by the FancyDay C10.
+
+The patch removes only the helper's `cc_binary` module. Other TrebleDroid command helpers remain unchanged.
+
+- Patch: `patches_treble/device_phh_treble/9010-Drop-obsolete-LGE-vibrator-helper.patch`
+- A16 post-port baseline: `device/phh/treble@93ca19c`
+- Patch SHA-256: `b6256cee46387e4cc8e5519620cca3c6504213a452281b6df054fdddd6a924d8`
+- Validation: generated directly from the recorded post-port A16 baseline

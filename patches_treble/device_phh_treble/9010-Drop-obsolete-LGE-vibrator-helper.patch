@@ -1,0 +1,40 @@
+From 4b0590cdd7589b4b7761b33c9c4258d55d044219 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 16:50:58 +0000
+Subject: [PATCH] treble: Drop obsolete LGE vibrator helper
+
+Android 16 removed the parent LGE vibrator HIDL dependency. The helper is unused on the FancyDay C10, so omit only its Soong module.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ cmds/Android.bp | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/cmds/Android.bp b/cmds/Android.bp
+index df2625f..096401c 100644
+--- a/cmds/Android.bp
++++ b/cmds/Android.bp
+@@ -37,18 +37,6 @@ cc_binary {
+ 	host_supported: true,
+ }
+ 
+-cc_binary {
+-	name: "vibrator-lge",
+-	srcs: [
+-		"vibrator-lge.cpp",
+-	],
+-	shared_libs: [
+-		"vendor.lge.hardware.vibrator@1.0",
+-		"libutils",
+-		"libhidlbase",
+-	],
+-}
+-
+ cc_binary {
+ 	name: "mtk-sms-fwk-ready",
+ 	srcs: [
+-- 
+2.43.0
+
