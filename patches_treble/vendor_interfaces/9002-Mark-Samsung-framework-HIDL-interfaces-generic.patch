@@ -1,0 +1,94 @@
+From 7af85028e97fa8c2380c2971a59a689681f9aef7 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 17:01:07 +0000
+Subject: [PATCH] treble: Mark Samsung framework HIDL interfaces generic
+
+Patched framework modules link Samsung radio and sysinput Java interfaces into the generic system image. Remove the system_ext-specific marker from their complete inheritance chains for Android 16 generic-image validation.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ vendor/samsung/hardware/radio/2.0/Android.bp    | 1 -
+ vendor/samsung/hardware/radio/2.1/Android.bp    | 1 -
+ vendor/samsung/hardware/radio/2.2/Android.bp    | 1 -
+ vendor/samsung/hardware/sysinput/1.0/Android.bp | 1 -
+ vendor/samsung/hardware/sysinput/1.1/Android.bp | 1 -
+ vendor/samsung/hardware/sysinput/1.2/Android.bp | 1 -
+ 6 files changed, 6 deletions(-)
+
+diff --git a/vendor/samsung/hardware/radio/2.0/Android.bp b/vendor/samsung/hardware/radio/2.0/Android.bp
+index d03a72b..375e041 100644
+--- a/vendor/samsung/hardware/radio/2.0/Android.bp
++++ b/vendor/samsung/hardware/radio/2.0/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.radio@2.0",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "ISehRadio.hal",
+         "ISehRadioIndication.hal",
+diff --git a/vendor/samsung/hardware/radio/2.1/Android.bp b/vendor/samsung/hardware/radio/2.1/Android.bp
+index 56ec166..ba2196a 100644
+--- a/vendor/samsung/hardware/radio/2.1/Android.bp
++++ b/vendor/samsung/hardware/radio/2.1/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.radio@2.1",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "ISehRadio.hal",
+     ],
+diff --git a/vendor/samsung/hardware/radio/2.2/Android.bp b/vendor/samsung/hardware/radio/2.2/Android.bp
+index d899222..78b95c5 100644
+--- a/vendor/samsung/hardware/radio/2.2/Android.bp
++++ b/vendor/samsung/hardware/radio/2.2/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.radio@2.2",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "types.hal",
+         "ISehRadio.hal",
+diff --git a/vendor/samsung/hardware/sysinput/1.0/Android.bp b/vendor/samsung/hardware/sysinput/1.0/Android.bp
+index 83cde29..5e34890 100644
+--- a/vendor/samsung/hardware/sysinput/1.0/Android.bp
++++ b/vendor/samsung/hardware/sysinput/1.0/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.sysinput@1.0",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "ISehSysInputDev.hal",
+     ],
+diff --git a/vendor/samsung/hardware/sysinput/1.1/Android.bp b/vendor/samsung/hardware/sysinput/1.1/Android.bp
+index fef5fb0..daa1a1c 100644
+--- a/vendor/samsung/hardware/sysinput/1.1/Android.bp
++++ b/vendor/samsung/hardware/sysinput/1.1/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.sysinput@1.1",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "ISehSysInputDev.hal",
+     ],
+diff --git a/vendor/samsung/hardware/sysinput/1.2/Android.bp b/vendor/samsung/hardware/sysinput/1.2/Android.bp
+index 9d9f486..d1a0aa4 100644
+--- a/vendor/samsung/hardware/sysinput/1.2/Android.bp
++++ b/vendor/samsung/hardware/sysinput/1.2/Android.bp
+@@ -3,7 +3,6 @@
+ hidl_interface {
+     name: "vendor.samsung.hardware.sysinput@1.2",
+     root: "vendor",
+-    system_ext_specific: true,
+     srcs: [
+         "ISehSysInputDev.hal",
+     ],
+-- 
+2.43.0
+

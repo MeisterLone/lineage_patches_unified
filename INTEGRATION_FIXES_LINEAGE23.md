@@ -39,3 +39,17 @@ The patch changes only that dependency from `Calendar` to `Etar`.
 - A16 post-port baseline: `build/make@aeeeb8898e`
 - Patch SHA-256: `6912118e7e3aa1deae9cdd9a62c4b7c1ba128485dbb73892370484543f1587f5`
 - Validation: `packages/apps/Etar/app/Android.bp` defines module `Etar`; all other `aosp_system_image` dependencies exist
+
+## 9002 — Mark Samsung framework HIDL interfaces generic
+
+A16 generic-image dependency validation rejected Samsung radio and sysinput Java interfaces because their HIDL
+roots were marked `system_ext_specific`, while retained TD framework patches link them from generic framework
+modules. Their parent inheritance definitions had the same marker.
+
+The patch removes only `system_ext_specific: true` from radio 2.0–2.2 and sysinput 1.0–1.2, making the complete
+interface chains valid generic dependencies.
+
+- Patch: `patches_treble/vendor_interfaces/9002-Mark-Samsung-framework-HIDL-interfaces-generic.patch`
+- A16 post-integration baseline: `vendor/interfaces@f0f2718`
+- Patch SHA-256: `2567cf092bc7a58581f63f21a9d056f5cafc479b37e3c7c9fa460106da0ab2f9`
+- Validation target: A16 `aosp_shared_system_image` generic dependency closure
