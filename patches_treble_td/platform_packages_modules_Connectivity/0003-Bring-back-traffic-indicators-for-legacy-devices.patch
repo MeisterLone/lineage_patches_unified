@@ -1,4 +1,4 @@
-From c252c4da39549242a435c3bc66a02814c14a6eaa Mon Sep 17 00:00:00 2001
+From 9be4e7e751a430bddb140f06096a85e0f27dab86 Mon Sep 17 00:00:00 2001
 From: koron393 <koron393@gmail.com>
 Date: Fri, 20 Jan 2023 05:41:13 +0900
 Subject: [PATCH 3/6] Bring back traffic indicators for legacy devices
@@ -11,25 +11,27 @@ This fixes traffic indicator on BPF-less kernel.
 
 Change-Id: I65c626c1c5832d81805c45c53b021236fe09030b
 Signed-off-by: koron393 <koron393@gmail.com>
+[ported to Android 16: nativeGet*Stat() call sites refactored upstream to
+early-return style; qtaguid fallback preserved]
 ---
- ...android_server_net_NetworkStatsService.cpp | 84 ++++++++++++++++++-
- 1 file changed, 81 insertions(+), 3 deletions(-)
+ ...android_server_net_NetworkStatsService.cpp | 78 ++++++++++++++++++-
+ 1 file changed, 75 insertions(+), 3 deletions(-)
 
 diff --git a/service-t/jni/com_android_server_net_NetworkStatsService.cpp b/service-t/jni/com_android_server_net_NetworkStatsService.cpp
-index c99939864d..741f13c7ed 100644
+index a724f3fbe3..80cc22a899 100644
 --- a/service-t/jni/com_android_server_net_NetworkStatsService.cpp
 +++ b/service-t/jni/com_android_server_net_NetworkStatsService.cpp
-@@ -39,6 +39,9 @@ using android::bpf::NetworkTraceHandler;
+@@ -40,6 +40,9 @@ using android::bpf::NetworkTraceHandler;
  
  namespace android {
  
 +static const char* QTAGUID_IFACE_STATS = "/proc/net/xt_qtaguid/iface_stat_fmt";
 +static const char* QTAGUID_UID_STATS = "/proc/net/xt_qtaguid/stats";
 +
- static void nativeRegisterIface(JNIEnv* env, jclass clazz, jstring iface) {
-     ScopedUtfChars iface8(env, iface);
-     if (iface8.c_str() == nullptr) return;
-@@ -73,13 +76,80 @@ static jobject statsValueToEntry(JNIEnv* env, StatsValue* stats) {
+ static struct {
+     jclass theClass;
+     jmethodID constructor;
+@@ -69,9 +72,74 @@ static jobject statsValueToEntry(JNIEnv* env, StatsValue* stats) {
      return result;
  }
  
@@ -98,45 +100,33 @@ index c99939864d..741f13c7ed 100644
 +
  static jobject nativeGetTotalStat(JNIEnv* env, jclass clazz) {
      StatsValue stats = {};
- 
-     if (bpfGetIfaceStats(nullptr, &stats) == 0) {
-         return statsValueToEntry(env, &stats);
-     } else {
--        return nullptr;
-+        if (parseIfaceStats(nullptr, &stats) == 0) {
-+            return statsValueToEntry(env, &stats);
-+        } else {
-+            return nullptr;
-+        }
-     }
+-    if (bpfGetIfaceStats(nullptr, &stats)) return nullptr;
++    if (bpfGetIfaceStats(nullptr, &stats)) {
++        if (parseIfaceStats(nullptr, &stats)) return nullptr;
++    }
+     return statsValueToEntry(env, &stats);
  }
  
-@@ -94,7 +164,11 @@ static jobject nativeGetIfaceStat(JNIEnv* env, jclass clazz, jstring iface) {
-     if (bpfGetIfaceStats(iface8.c_str(), &stats) == 0) {
-         return statsValueToEntry(env, &stats);
-     } else {
--        return nullptr;
-+        if (parseIfaceStats(iface8.c_str(), &stats) == 0) {
-+            return statsValueToEntry(env, &stats);
-+        } else {
-+            return nullptr;
-+        }
-     }
+@@ -80,13 +148,17 @@ static jobject nativeGetIfaceStat(JNIEnv* env, jclass clazz, jstring iface) {
+     if (!iface8.c_str()) return nullptr;
+ 
+     StatsValue stats = {};
+-    if (bpfGetIfaceStats(iface8.c_str(), &stats)) return nullptr;
++    if (bpfGetIfaceStats(iface8.c_str(), &stats)) {
++        if (parseIfaceStats(iface8.c_str(), &stats)) return nullptr;
++    }
+     return statsValueToEntry(env, &stats);
  }
  
-@@ -104,7 +178,11 @@ static jobject nativeGetUidStat(JNIEnv* env, jclass clazz, jint uid) {
-     if (bpfGetUidStats(uid, &stats) == 0) {
-         return statsValueToEntry(env, &stats);
-     } else {
--        return nullptr;
-+        if (parseUidStats(uid, &stats) == 0) {
-+            return statsValueToEntry(env, &stats);
-+        } else {
-+            return nullptr;
-+        }
-     }
+ static jobject nativeGetUidStat(JNIEnv* env, jclass clazz, jint uid) {
+     StatsValue stats = {};
+-    if (bpfGetUidStats(uid, &stats)) return nullptr;
++    if (bpfGetUidStats(uid, &stats)) {
++        if (parseUidStats(uid, &stats)) return nullptr;
++    }
+     return statsValueToEntry(env, &stats);
  }
  
 -- 
-2.34.1
+2.43.0
 

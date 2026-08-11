@@ -1,26 +1,44 @@
-From 72e92276abc91d2fdd98ff49cc26b3711887611e Mon Sep 17 00:00:00 2001
+From a0f88cc7b65dc8a0cf8f4f89b9d629378f070073 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Sun, 26 May 2024 21:34:17 +0800
-Subject: [PATCH 13/14] SurfaceFlinger: Disable SF HWC backpressure
+Subject: [PATCH] SurfaceFlinger: Disable SF HWC backpressure
 
+[los23-port] rebased: backpressure decision moved from SurfaceFlinger::commit to FrameTargeter::expectedSignaledPresentFence upstream; applied at wouldBackpressure init per lineage-22-light; kept phh property name used by treble_app master
+
+Change-Id: I730da08bfedea61ebd9c6f4fb52e6eed34680ffd
 ---
- services/surfaceflinger/SurfaceFlinger.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ services/surfaceflinger/Scheduler/src/FrameTargeter.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 7a75fca632..5888bc4352 100644
---- a/services/surfaceflinger/SurfaceFlinger.cpp
-+++ b/services/surfaceflinger/SurfaceFlinger.cpp
-@@ -2557,7 +2557,8 @@ bool SurfaceFlinger::commit(PhysicalDisplayId pacesetterId,
-         }
-     }
+diff --git a/services/surfaceflinger/Scheduler/src/FrameTargeter.cpp b/services/surfaceflinger/Scheduler/src/FrameTargeter.cpp
+index 15e7f8ca0e..efc0c6640c 100644
+--- a/services/surfaceflinger/Scheduler/src/FrameTargeter.cpp
++++ b/services/surfaceflinger/Scheduler/src/FrameTargeter.cpp
+@@ -14,6 +14,7 @@
+  * limitations under the License.
+  */
  
--    if (pacesetterFrameTarget.isFramePending()) {
-+    if (base::GetBoolProperty("persist.sys.phh.enable_sf_hwc_backpressure"s, true)
-+            && pacesetterFrameTarget.isFramePending()) {
-         if (mBackpressureGpuComposition || pacesetterFrameTarget.didMissHwcFrame()) {
-             if (FlagManager::getInstance().vrr_config()) {
-                 mScheduler->getVsyncSchedule()->getTracker().onFrameMissed(
++#include <android-base/properties.h>
+ #include <common/FlagManager.h>
+ #include <common/trace.h>
+ #include <scheduler/FrameTargeter.h>
+@@ -22,6 +23,7 @@
+ 
+ namespace android::scheduler {
+ using namespace std::chrono_literals;
++using namespace std::string_literals;
+ 
+ FrameTarget::FrameTarget(const std::string& displayLabel)
+       : mFramePending("PrevFramePending " + displayLabel, false),
+@@ -33,7 +35,7 @@ std::pair<bool /* wouldBackpressure */, FrameTarget::PresentFence>
+ FrameTarget::expectedSignaledPresentFence(Period vsyncPeriod, Period minFramePeriod) const {
+     SFTRACE_CALL();
+ 
+-    bool wouldBackpressure = true;
++    bool wouldBackpressure = base::GetBoolProperty("persist.sys.phh.enable_sf_hwc_backpressure"s, true);
+     auto expectedPresentTime = mExpectedPresentTime;
+     for (size_t i = mPresentFences.size(); i != 0; --i) {
+         const auto& fence = mPresentFences[i - 1];
 -- 
-2.34.1
+2.43.0
 

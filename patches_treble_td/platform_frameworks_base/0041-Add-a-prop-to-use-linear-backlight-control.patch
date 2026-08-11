@@ -1,17 +1,23 @@
-From 63259a8182cc222a25f0c22bd7b5eb16382baa9d Mon Sep 17 00:00:00 2001
+From b11e23c6eb49d7548297248aaf4ef648c4c1cc18 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Mon, 30 Oct 2023 19:25:27 -0400
-Subject: [PATCH 41/51] Add a prop to use linear backlight control
+Date: Tue, 11 Aug 2026 09:08:36 +0000
+Subject: [PATCH] Add a prop to use linear backlight control
 
+[Port to A16] A16 added logBrightnessChange(mDisplayId, valFloat, false) inside
+the AsyncTask Runnable; valFloat is no longer effectively final once the
+linear-brightness override assigns to it, so both uses inside the anonymous
+class now read finalValFloat (javac would otherwise reject the capture).
+
+Change-Id: I2dd00a3266738243bd857427945bf5599528bb90
 ---
- .../settings/brightness/BrightnessController.java      | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ .../settings/brightness/BrightnessController.java     | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/settings/brightness/BrightnessController.java b/packages/SystemUI/src/com/android/systemui/settings/brightness/BrightnessController.java
-index a48da045360c..d327870ed754 100644
+index d5bc74c18d2e..4ecb62ee83e2 100644
 --- a/packages/SystemUI/src/com/android/systemui/settings/brightness/BrightnessController.java
 +++ b/packages/SystemUI/src/com/android/systemui/settings/brightness/BrightnessController.java
-@@ -362,9 +362,15 @@ public class BrightnessController implements ToggleSlider.Listener, MirroredBrig
+@@ -377,9 +377,14 @@ public class BrightnessController implements ToggleSlider.Listener, MirroredBrig
                  : MetricsEvent.ACTION_BRIGHTNESS;
          minBacklight = mBrightnessMin;
          maxBacklight = mBrightnessMax;
@@ -24,19 +30,20 @@ index a48da045360c..d327870ed754 100644
 +            valFloat = value / 65536.0f;
 +        }
 +        final float finalValFloat = valFloat;
-+
          if (stopTracking) {
              // TODO(brightnessfloat): change to use float value instead.
              MetricsLogger.action(mContext, metric,
-@@ -375,7 +381,7 @@ public class BrightnessController implements ToggleSlider.Listener, MirroredBrig
+@@ -393,8 +398,8 @@ public class BrightnessController implements ToggleSlider.Listener, MirroredBrig
          if (!tracking) {
              AsyncTask.execute(new Runnable() {
                      public void run() {
+-                        logBrightnessChange(mDisplayId, valFloat, false);
 -                        mDisplayManager.setBrightness(mDisplayId, valFloat);
++                        logBrightnessChange(mDisplayId, finalValFloat, false);
 +                        mDisplayManager.setBrightness(mDisplayId, finalValFloat);
                      }
                  });
          }
 -- 
-2.34.1
+2.43.0
 

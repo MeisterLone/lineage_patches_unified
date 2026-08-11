@@ -1,21 +1,25 @@
-From dd7dbc8f59d4fba55fcc965416c56751f319599f Mon Sep 17 00:00:00 2001
+From 2becbf627181279a4c6a562de738b88b6a451935 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sun, 5 Apr 2020 16:32:46 +0200
-Subject: [PATCH 10/51] Always allow overriding the number of work profiles
+Date: Tue, 11 Aug 2026 08:53:06 +0000
+Subject: [PATCH] Always allow overriding the number of work profiles
 
 Change-Id: I6eb09aa71663c6fbe7563e3038bffcabdba0ff6a
+
+[Port to A16] Same debuggable-gate removal; A16 added multiuser flag early-returns above, left intact.
+
+Change-Id: Ib0c394d68c90fcb6ffb739567968242cf5151423
 ---
  .../java/com/android/server/pm/UserManagerService.java    | 8 ++------
  1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/services/core/java/com/android/server/pm/UserManagerService.java b/services/core/java/com/android/server/pm/UserManagerService.java
-index 7349755402b1..0d1930db746a 100644
+index 92cf5d01d63c..08f26c1af060 100644
 --- a/services/core/java/com/android/server/pm/UserManagerService.java
 +++ b/services/core/java/com/android/server/pm/UserManagerService.java
-@@ -7883,12 +7883,8 @@ public class UserManagerService extends IUserManager.Stub {
-      */
-     private static int getMaxUsersOfTypePerParent(UserTypeDetails userTypeDetails) {
-         final int defaultMax = userTypeDetails.getMaxAllowedPerParent();
+@@ -9127,12 +9127,8 @@ public class UserManagerService extends IUserManager.Stub {
+             // UNLIMITED_NUMBER_OF_USERS serves as a shorthand for getMaxSupportedUsers().
+             defaultMax = UserManager.getMaxSupportedUsers();
+         }
 -        if (!Build.IS_DEBUGGABLE) {
 -            return defaultMax;
 -        } else {
@@ -28,5 +32,5 @@ index 7349755402b1..0d1930db746a 100644
          return defaultMax;
      }
 -- 
-2.34.1
+2.43.0
 

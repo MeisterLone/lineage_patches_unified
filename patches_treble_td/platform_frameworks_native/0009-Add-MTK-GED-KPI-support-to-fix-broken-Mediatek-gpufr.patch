@@ -1,7 +1,7 @@
-From 657d70447442ce6fe3e8ee94f333f06e578c85cb Mon Sep 17 00:00:00 2001
+From a4b4e23029bd87b6bfda2fe14601d2b02d7b5384 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 25 Nov 2023 08:15:28 -0500
-Subject: [PATCH 09/14] Add MTK GED KPI support to fix broken Mediatek gpufreq
+Subject: [PATCH] Add MTK GED KPI support to fix broken Mediatek gpufreq
 
 Mediatek GPU scheduler likes to have the timestamps of the frames to be
 able to adjust DVFS.
@@ -16,16 +16,35 @@ than just standard DVFS.
 
 Thanks @sarthakroy2002 for the help and support (other people helped as
 well)
+
+[los23-port] rebased: Surface.cpp refactored upstream; asBinder now IInterface::asBinder; mPid/mIsSurfaceFlinger given default initializers
+
+Change-Id: I3c2effeb8eb2b4feb99e33905fde739f5477734c
+
+[los23-verify] repaired by verification-opus5 (repo-008 verify attempt-2):
+  - restored the real line continuation in the GED_BRIDGE_IO_GPU_TIMESTAMP macro
+    (the candidate carried a literal backslash-n, i.e. a stray backslash on expansion);
+  - removed a raw NUL byte from the cmdline comment and restored the escape text;
+  - restored the escape sequence in the cmdline char literal (a raw newline inside a
+    character literal is ill-formed C++);
+  - IInterface::asBinder(listener) -> IInterface::asBinder(mListenerProxy): in A16
+    Surface::connect() takes sp<SurfaceListener>, which derives from RefBase and is
+    not an IInterface; mListenerProxy is the sp<IProducerListener> Bn proxy created
+    a few lines earlier, so the localBinder() owner-PID test keeps A14 semantics;
+  - guarded the connect() GED block with !defined(NO_BINDER) and moved
+    <android-base/properties.h> to the unconditional include block, because A16 also
+    compiles Surface.cpp into libgui_bufferqueue_static with -DNO_BINDER, where
+    binder/IPCThreadState.h is not included.
 ---
- libs/gui/Surface.cpp           | 202 +++++++++++++++++++++++++++++++++
+ libs/gui/Surface.cpp           | 203 +++++++++++++++++++++++++++++++++
  libs/gui/include/gui/Surface.h |   3 +
- 2 files changed, 205 insertions(+)
+ 2 files changed, 206 insertions(+)
 
 diff --git a/libs/gui/Surface.cpp b/libs/gui/Surface.cpp
-index 086544e48a..6e73c38a63 100644
+index cabc1773e0..707a7c4e22 100644
 --- a/libs/gui/Surface.cpp
 +++ b/libs/gui/Surface.cpp
-@@ -24,6 +24,9 @@
+@@ -26,6 +26,9 @@
  #include <deque>
  #include <mutex>
  #include <thread>
@@ -35,17 +54,21 @@ index 086544e48a..6e73c38a63 100644
  
  #include <inttypes.h>
  
-@@ -50,6 +53,9 @@
+@@ -36,10 +39,13 @@
  #include <gui/LayerState.h>
  #include <private/gui/ComposerService.h>
  #include <private/gui/ComposerServiceAIDL.h>
-+#include <android-base/properties.h>
 +
 +#include <binder/IPCThreadState.h>
+ #endif
  
- #include <com_android_graphics_libgui_flags.h>
+ #include <android/native_window.h>
  
-@@ -76,6 +82,37 @@ bool isInterceptorRegistrationOp(int op) {
++#include <android-base/properties.h>
+ #include <android-base/strings.h>
+ #include <gui/FenceMonitor.h>
+ #include <gui/TraceUtils.h>
+@@ -103,6 +109,37 @@ bool isInterceptorRegistrationOp(int op) {
  }
  
  } // namespace
@@ -81,9 +104,9 @@ index 086544e48a..6e73c38a63 100644
 +static int doMtkGedKpi = -1;
 +static int ged_fd = -1;
  
- Surface::Surface(const sp<IGraphicBufferProducer>& bufferProducer, bool controlledByApp,
-                  const sp<IBinder>& surfaceControlHandle)
-@@ -128,6 +165,47 @@ Surface::Surface(const sp<IGraphicBufferProducer>& bufferProducer, bool controll
+ Surface::ProducerDeathListenerProxy::ProducerDeathListenerProxy(wp<SurfaceListener> surfaceListener)
+       : mSurfaceListener(surfaceListener) {}
+@@ -175,6 +212,47 @@ Surface::Surface(const sp<IGraphicBufferProducer>& bufferProducer, bool controll
      mSwapIntervalZero = false;
      mMaxBufferCount = NUM_BUFFER_SLOTS;
      mSurfaceControlHandle = surfaceControlHandle;
@@ -131,7 +154,7 @@ index 086544e48a..6e73c38a63 100644
  }
  
  Surface::~Surface() {
-@@ -668,6 +746,36 @@ int Surface::dequeueBuffer(android_native_buffer_t** buffer, int* fenceFd) {
+@@ -754,6 +832,36 @@ int Surface::dequeueBuffer(sp<GraphicBuffer>* buffer, int* fenceFd) {
          }
      }
  
@@ -168,7 +191,7 @@ index 086544e48a..6e73c38a63 100644
      if (fence->isValid()) {
          *fenceFd = fence->dup();
          if (*fenceFd == -1) {
-@@ -1111,6 +1219,60 @@ void Surface::onBufferQueuedLocked(int slot, sp<Fence> fence,
+@@ -1322,6 +1430,60 @@ void Surface::onBufferQueuedLocked(int slot, sp<Fence> fence,
      }
  
      mQueueBufferCondition.broadcast();
@@ -229,16 +252,16 @@ index 086544e48a..6e73c38a63 100644
  
      if (CC_UNLIKELY(atrace_is_tag_enabled(ATRACE_TAG_GRAPHICS))) {
          static gui::FenceMonitor gpuCompletionThread("GPU completion");
-@@ -1878,6 +2040,46 @@ int Surface::connect(
- 
-         mConsumerRunningBehind = (output.numPendingBuffers >= 2);
+@@ -2196,6 +2358,47 @@ int Surface::connect(int api, const sp<SurfaceListener>& listener, bool reportBu
+         SURF_LOGE_IF(idErr != NO_ERROR, "Unable to get ID from IGBP: %d", idErr);
+         mIsConnected = true;
      }
-+
++#if !defined(NO_BINDER)
 +    // For MTK GED KPI, we need to grab the Surface owner's PID
 +    // and also know whether that owner is surfaceflinger
 +    if (api == NATIVE_WINDOW_API_EGL && ged_fd >= 0) {
 +        IPCThreadState *ipc = IPCThreadState::selfOrNull();
-+        const sp<IBinder>& token = listener->asBinder(listener);
++        const sp<IBinder> token = IInterface::asBinder(mListenerProxy);
 +        mPid =  (token != NULL && NULL != token->localBinder())
 +            ? getpid()
 +            : (ipc != nullptr)?ipc->getCallingPid():-1;
@@ -272,24 +295,25 @@ index 086544e48a..6e73c38a63 100644
 +            mIsSurfaceFlinger = false;
 +        }
 +    }
++#endif // !defined(NO_BINDER)
 +
      if (!err && api == NATIVE_WINDOW_API_CPU) {
          mConnectedToCpu = true;
          // Clear the dirty region in case we're switching from a non-CPU API
 diff --git a/libs/gui/include/gui/Surface.h b/libs/gui/include/gui/Surface.h
-index 39a59e42aa..ff595dd188 100644
+index 9a6e75c333..e030439876 100644
 --- a/libs/gui/include/gui/Surface.h
 +++ b/libs/gui/include/gui/Surface.h
-@@ -638,6 +638,9 @@ protected:
- 
+@@ -761,6 +761,9 @@ protected:
      // Buffers that are successfully dequeued/attached and handed to clients
      std::unordered_set<int> mDequeuedSlots;
-+
-+    pid_t mPid;
-+    bool mIsSurfaceFlinger;
- };
  
- } // namespace android
++    pid_t mPid = -1;
++    bool mIsSurfaceFlinger = false;
++
+     // Indicates whether this surface holds the mouse cursor, and subsequently determines whether
+     // the GRALLOC_USAGE_CURSOR usage flag should be set on the buffer created when this surface is
+     // locked.
 -- 
-2.34.1
+2.43.0
 

@@ -1,36 +1,33 @@
-From 9bde413afbac1f96c43c4b4ed0e3846937a93f4f Mon Sep 17 00:00:00 2001
-From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sun, 20 Jun 2021 09:09:15 +0000
-Subject: [PATCH 2/5] build: Integrate prop modifications (2/2)
+From 23b16e736f6e48b66c4cbd98810723304210dcf0 Mon Sep 17 00:00:00 2001
+From: port-worker <port-worker@localhost>
+Date: Tue, 11 Aug 2026 08:49:20 +0000
+Subject: [PATCH] build: Integrate prop modifications (2/2)
+
+[ported to A16: build/core/main_version.mk no longer exists; version props moved to
+config/version.mk as PRODUCT_PRODUCT_PROPERTIES. Drop ro.lineage.version and
+ro.lineage.display.version here (ro.modversion is not set by A16 vendor/lineage
+at all) so the buildinfo.sh values from part 1/2 win.]
 
 Change-Id: I076973f902ab20011964e50955e4326c18d5b34e
 ---
- build/core/main_version.mk | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ config/version.mk | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/build/core/main_version.mk b/build/core/main_version.mk
-index 28044e2c..c5aa9617 100644
---- a/build/core/main_version.mk
-+++ b/build/core/main_version.mk
-@@ -5,17 +5,12 @@ ADDITIONAL_SYSTEM_PROPERTIES += \
- endif
+diff --git a/config/version.mk b/config/version.mk
+index 7b7e646e..931deca5 100644
+--- a/config/version.mk
++++ b/config/version.mk
+@@ -38,8 +38,8 @@ LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(LINEAGE_V
+ LINEAGE_DISPLAY_VERSION := $(PRODUCT_VERSION_MAJOR)-$(LINEAGE_VERSION_SUFFIX)
  
- # LineageOS System Version
-+# Do not set Display Versions here, due to Makefile not playing nice with spaces
- ADDITIONAL_SYSTEM_PROPERTIES += \
+ # LineageOS version properties
++# Do not set ro.lineage.version / ro.lineage.display.version / ro.modversion here;
++# they are set via buildinfo.sh (build/make) instead
+ PRODUCT_PRODUCT_PROPERTIES += \
 -    ro.lineage.version=$(LINEAGE_VERSION) \
-     ro.lineage.releasetype=$(LINEAGE_BUILDTYPE) \
+-    ro.lineage.display.version=$(LINEAGE_DISPLAY_VERSION) \
      ro.lineage.build.version=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR) \
--    ro.modversion=$(LINEAGE_VERSION) \
-     ro.lineagelegal.url=https://lineageos.org/legal
- 
--# LineageOS Platform Display Version
--ADDITIONAL_SYSTEM_PROPERTIES += \
--    ro.lineage.display.version=$(LINEAGE_DISPLAY_VERSION)
--
- # LineageOS Platform SDK Version
- ADDITIONAL_SYSTEM_PROPERTIES += \
-     ro.lineage.build.version.plat.sdk=$(LINEAGE_PLATFORM_SDK_VERSION)
+     ro.lineage.releasetype=$(LINEAGE_BUILDTYPE)
 -- 
-2.34.1
+2.43.0
 

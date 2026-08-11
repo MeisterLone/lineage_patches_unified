@@ -1,56 +1,78 @@
-From f49be883011f6787c6a48fc0fd4916817bd2d20e Mon Sep 17 00:00:00 2001
+From ea9e71000e0d1ebcdd73771e39fd567b25e04f54 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Tue, 6 Oct 2020 01:41:16 +0000
-Subject: [PATCH 11/45] UI: Revive navbar layout tuning via sysui_nav_bar
- tunable
+Date: Tue, 11 Aug 2026 09:23:22 +0000
+Subject: [PATCH] UI: Revive navbar layout tuning via sysui_nav_bar tunable
 
-Google keeps fixing what ain't broken.
+[Port to A16] LineageOS 23 dropped the shared NAV_BAR_INVERSE/navigation-hint
+ContentObserver this patch hooked into, so the observer is recreated - but with
+the A14 lifecycle: field observer built in the constructor, registered in
+onAttachedToWindow and unregistered in onDetachedFromWindow (the A16 class
+already has onDetachedFromWindow), instead of an unregistered constructor-time
+registration that would leak one observer per navbar inflation.
 
-Change-Id: Ied7d7859e50fd0fcc346219964e747c5d5f4c352
+Change-Id: I3ac611b04ea00a675cea836e840ffe0fb241c11a
 ---
- .../NavigationBarInflaterView.java            | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ .../views/NavigationBarInflaterView.java      | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/packages/SystemUI/src/com/android/systemui/navigationbar/NavigationBarInflaterView.java b/packages/SystemUI/src/com/android/systemui/navigationbar/NavigationBarInflaterView.java
-index 73ca35557133..bbb312c4e56b 100644
---- a/packages/SystemUI/src/com/android/systemui/navigationbar/NavigationBarInflaterView.java
-+++ b/packages/SystemUI/src/com/android/systemui/navigationbar/NavigationBarInflaterView.java
-@@ -135,6 +135,7 @@ public class NavigationBarInflaterView extends FrameLayout {
+diff --git a/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java b/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
+index fe2f3890bfa8..a8899a594e9f 100644
+--- a/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
++++ b/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
+@@ -22,6 +22,9 @@ import static android.view.WindowManagerPolicyConstants.NAV_BAR_MODE_3BUTTON;
+ import android.annotation.Nullable;
+ import android.content.Context;
+ import android.content.res.Configuration;
++import android.database.ContentObserver;
++import android.net.Uri;
++import android.provider.Settings;
+ import android.graphics.drawable.Icon;
+ import android.util.AttributeSet;
+ import android.util.Log;
+@@ -116,6 +119,9 @@ public class NavigationBarInflaterView extends FrameLayout {
  
-     private boolean mInverseLayout;
-     private boolean mIsHintEnabled;
+     private boolean mIsVertical;
+     private boolean mAlternativeOrder;
 +    private boolean mUsingCustomLayout;
++
++    private final ContentObserver mContentObserver;
  
-     private final ContentObserver mContentObserver;
- 
-@@ -159,6 +160,9 @@ public class NavigationBarInflaterView extends FrameLayout {
-                     mContext.getMainExecutor().execute(() -> {
-                         onLikelyDefaultLayoutChange();
-                     });
-+                } else if (Settings.Secure.getUriFor(NAV_BAR_VIEWS).equals(uri)) {
+     private LauncherProxyService mLauncherProxyService;
+     private int mNavBarMode = NAV_BAR_MODE_3BUTTON;
+@@ -126,6 +132,15 @@ public class NavigationBarInflaterView extends FrameLayout {
+         mLauncherProxyService = Dependency.get(LauncherProxyService.class);
+         mListener = new Listener(this);
+         mNavBarMode = Dependency.get(NavigationModeController.class).addListener(mListener);
++        mContentObserver = new ContentObserver(null) {
++            @Override
++            public void onChange(boolean selfChange, @Nullable Uri uri) {
++                if (Settings.Secure.getUriFor(NAV_BAR_VIEWS).equals(uri)) {
 +                    setNavigationBarLayout(Settings.Secure.getString(mContext.getContentResolver(),
 +                            NAV_BAR_VIEWS));
-                 }
-             }
-         };
-@@ -215,12 +219,16 @@ public class NavigationBarInflaterView extends FrameLayout {
-         Uri navBarInverse = Settings.Secure.getUriFor(NAV_BAR_INVERSE);
-         Uri navigationBarHint = LineageSettings.System.getUriFor(
-                 LineageSettings.System.NAVIGATION_BAR_HINT);
-+        Uri navBarViews = Settings.Secure.getUriFor(NAV_BAR_VIEWS);
-         mContext.getContentResolver().registerContentObserver(navBarInverse, false,
-                 mContentObserver);
-         mContext.getContentResolver().registerContentObserver(navigationBarHint, false,
-                 mContentObserver);
-+        mContext.getContentResolver().registerContentObserver(navBarViews, false,
-+                mContentObserver);
-         mContentObserver.onChange(true, navBarInverse);
-         mContentObserver.onChange(true, navigationBarHint);
-+        mContentObserver.onChange(true, navBarViews);
++                }
++            }
++        };
      }
  
+     @VisibleForTesting
+@@ -169,13 +184,26 @@ public class NavigationBarInflaterView extends FrameLayout {
+         mNavBarMode = mode;
+     }
+ 
++    @Override
++    protected void onAttachedToWindow() {
++        super.onAttachedToWindow();
++        Uri navBarViews = Settings.Secure.getUriFor(NAV_BAR_VIEWS);
++        mContext.getContentResolver().registerContentObserver(navBarViews, false,
++                mContentObserver);
++        mContentObserver.onChange(true, navBarViews);
++    }
++
      @Override
-@@ -237,6 +245,9 @@ public class NavigationBarInflaterView extends FrameLayout {
+     protected void onDetachedFromWindow() {
+         Dependency.get(NavigationModeController.class).removeListener(mListener);
++        mContext.getContentResolver().unregisterContentObserver(mContentObserver);
+         super.onDetachedFromWindow();
      }
  
      public void onLikelyDefaultLayoutChange() {
@@ -60,7 +82,7 @@ index 73ca35557133..bbb312c4e56b 100644
          // Reevaluate new layout
          final String newValue = getDefaultLayout();
          if (!Objects.equals(mCurrentLayout, newValue)) {
-@@ -245,6 +256,16 @@ public class NavigationBarInflaterView extends FrameLayout {
+@@ -184,6 +212,16 @@ public class NavigationBarInflaterView extends FrameLayout {
          }
      }
  
@@ -78,5 +100,5 @@ index 73ca35557133..bbb312c4e56b 100644
          mButtonDispatchers = buttonDispatchers;
          clearDispatcherViews();
 -- 
-2.34.1
+2.43.0
 

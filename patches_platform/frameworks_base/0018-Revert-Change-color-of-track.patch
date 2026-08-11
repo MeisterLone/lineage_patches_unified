@@ -1,9 +1,13 @@
-From 8a050d13fe7128be39a4ae61adcb36a842ef10cb Mon Sep 17 00:00:00 2001
+From 6b08cc4b5b6849d9c6bca5306525e1dc83a19087 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sun, 30 Jun 2024 16:49:47 +0800
-Subject: [PATCH 18/45] Revert "Change color of track"
+Date: Tue, 11 Aug 2026 09:35:32 +0000
+Subject: [PATCH] Revert "Change color of track"
 
 This reverts commit 9ba91db9836625e5f45367b38b76cf08615cce00.
+
+[Port to A16] brightness_slider_track.xml identical except 2025 copyright; drawable reference intact.
+
+Change-Id: I96bfe15d0a17462c42202ac78fcf76d885363a42
 ---
  .../res/color/brightness_slider_track.xml     | 19 -------------------
  .../drawable/brightness_progress_drawable.xml |  2 +-
@@ -12,12 +16,12 @@ This reverts commit 9ba91db9836625e5f45367b38b76cf08615cce00.
 
 diff --git a/packages/SystemUI/res/color/brightness_slider_track.xml b/packages/SystemUI/res/color/brightness_slider_track.xml
 deleted file mode 100644
-index 6028769f3789..000000000000
+index c6e9b65fb7e8..000000000000
 --- a/packages/SystemUI/res/color/brightness_slider_track.xml
 +++ /dev/null
 @@ -1,19 +0,0 @@
 -<?xml version="1.0" encoding="utf-8"?><!--
--  ~ Copyright (C) 2024 The Android Open Source Project
+-  ~ Copyright (C) 2025 The Android Open Source Project
 -  ~
 -  ~ Licensed under the Apache License, Version 2.0 (the "License");
 -  ~ you may not use this file except in compliance with the License.
@@ -37,10 +41,10 @@ index 6028769f3789..000000000000
 -</selector>
 \ No newline at end of file
 diff --git a/packages/SystemUI/res/drawable/brightness_progress_drawable.xml b/packages/SystemUI/res/drawable/brightness_progress_drawable.xml
-index cae9d6b0513e..95c7778c0e76 100644
+index d38da7b766c1..e2d7ac2012bb 100644
 --- a/packages/SystemUI/res/drawable/brightness_progress_drawable.xml
 +++ b/packages/SystemUI/res/drawable/brightness_progress_drawable.xml
-@@ -24,7 +24,7 @@
+@@ -25,7 +25,7 @@
              <shape>
                  <size android:height="@dimen/rounded_slider_track_width" />
                  <corners android:radius="@dimen/rounded_slider_track_corner_radius" />
@@ -50,5 +54,5 @@ index cae9d6b0513e..95c7778c0e76 100644
          </inset>
      </item>
 -- 
-2.34.1
+2.43.0
 

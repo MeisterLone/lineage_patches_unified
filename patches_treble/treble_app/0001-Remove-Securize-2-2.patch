@@ -1,4 +1,4 @@
-From 584a4a687cf006c077392a8bc5738904f94b7e2a Mon Sep 17 00:00:00 2001
+From bf49c3d828ad1c0ffe7248684c9d7db4068f6eae Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Mon, 15 Jul 2024 22:14:09 +0800
 Subject: [PATCH] Remove Securize (2/2)
@@ -12,7 +12,7 @@ Change-Id: I36abaea9714ccdd5680be88e771143eee2a170cd
  2 files changed, 4 insertions(+), 36 deletions(-)
 
 diff --git a/app/src/main/java/me/phh/treble/app/MiscSettings.kt b/app/src/main/java/me/phh/treble/app/MiscSettings.kt
-index e80012a..053782e 100644
+index 030494b..a1a01d9 100644
 --- a/app/src/main/java/me/phh/treble/app/MiscSettings.kt
 +++ b/app/src/main/java/me/phh/treble/app/MiscSettings.kt
 @@ -21,7 +21,6 @@ object MiscSettings : Settings {
@@ -23,7 +23,7 @@ index e80012a..053782e 100644
      val secureAdb = "key_misc_secure_adb"
      val removeTelephony = "key_misc_removetelephony"
      val remotectl = "key_misc_remotectl"
-@@ -59,39 +58,6 @@ class MiscSettingsFragment : SettingsFragment() {
+@@ -61,39 +60,6 @@ class MiscSettingsFragment : SettingsFragment() {
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          super.onCreatePreferences(savedInstanceState, rootKey)
  
@@ -64,10 +64,10 @@ index e80012a..053782e 100644
          removeTelephonyPref!!.setOnPreferenceClickListener {
  
 diff --git a/app/src/main/res/xml/pref_misc.xml b/app/src/main/res/xml/pref_misc.xml
-index a8221a7..bb9aff6 100644
+index bb46832..b5e8c72 100644
 --- a/app/src/main/res/xml/pref_misc.xml
 +++ b/app/src/main/res/xml/pref_misc.xml
-@@ -203,8 +203,10 @@
+@@ -208,8 +208,10 @@
              android:entryValues="@array/pref_misc_fod_color_values"
              android:key="key_misc_fod_color"
              android:title="Under-display fp color" />
@@ -81,5 +81,5 @@ index a8221a7..bb9aff6 100644
              android:defaultValue="false"
              android:key="key_misc_secure_adb"
 -- 
-2.34.1
+2.43.0
 

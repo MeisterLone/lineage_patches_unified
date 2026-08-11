@@ -1,23 +1,36 @@
-From 43e368a26ce17bbef64d29ca92ad56d0f387def3 Mon Sep 17 00:00:00 2001
+From f0ed7a8c9c6243debf595519d8b8bc33a2329862 Mon Sep 17 00:00:00 2001
 From: Alberto Ponces <ponces26@gmail.com>
-Date: Fri, 20 Oct 2023 09:11:55 +0000
-Subject: [PATCH 11/14] Revert "Removed IWLAN legacy mode support"
+Date: Tue, 11 Aug 2026 09:30:33 +0000
+Subject: [PATCH 10/13] Revert "Removed IWLAN legacy mode support"
 
 This reverts commit d8d3ed41243ba1fc4b5a5a2a6e30be3f6a404a9d.
 
+Ported to lineage-23.2 (A16): git revert with manual conflict resolution.
+ServiceStateTracker: A16 moved radio-off handling into
+handlePollStateInternalForRadioOffOrUnavailable; legacy-mode setOutOfService
+applied there. processIwlanRegistrationInfo trailing legacy block relocated
+from updateNtnCapability (mis-merged) and updated to
+getNetworkRegistrationState(). AccessNetworksManager ctor keeps A16
+registerCarrierConfigChangeListener instead of the removed BroadcastReceiver
+flow. DataNetwork/DataNetworkController keep A16 loop form (equivalent via
+legacy-aware getAvailableTransports). Test-file hunks matching A16 kept.
+
 Change-Id: I1fd5a803ea3b01f902ff14e1ee6225312b2d3206
 ---
- .../telephony/ServiceStateTracker.java        |  63 ++++++++--
- .../telephony/data/AccessNetworksManager.java | 110 +++++++++++++++---
+ .../telephony/ServiceStateTracker.java        |  64 ++++++++--
+ .../telephony/data/AccessNetworksManager.java | 120 ++++++++++++++----
  .../telephony/data/DataNetworkController.java |  10 +-
- .../internal/telephony/imsphone/ImsPhone.java |  42 ++++++-
- 4 files changed, 189 insertions(+), 36 deletions(-)
+ .../telephony/data/DataRetryManager.java      |   7 +-
+ .../internal/telephony/imsphone/ImsPhone.java |  42 +++++-
+ .../data/AccessNetworksManagerTest.java       |   3 +-
+ .../telephony/imsphone/ImsPhoneTest.java      |   2 +
+ 7 files changed, 203 insertions(+), 45 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/ServiceStateTracker.java b/src/java/com/android/internal/telephony/ServiceStateTracker.java
-index e516c05afd..8ea2c0d198 100644
+index cef0ddfbed..e8de3bab90 100644
 --- a/src/java/com/android/internal/telephony/ServiceStateTracker.java
 +++ b/src/java/com/android/internal/telephony/ServiceStateTracker.java
-@@ -671,7 +671,7 @@ public class ServiceStateTracker extends Handler {
+@@ -696,7 +696,7 @@ public class ServiceStateTracker extends Handler {
  
          mAccessNetworksManager = mPhone.getAccessNetworksManager();
          mOutOfServiceSS = new ServiceState();
@@ -26,7 +39,7 @@ index e516c05afd..8ea2c0d198 100644
  
          for (int transportType : mAccessNetworksManager.getAvailableTransports()) {
              mRegStateManagers.append(transportType, new NetworkRegistrationManager(
-@@ -793,9 +793,9 @@ public class ServiceStateTracker extends Handler {
+@@ -820,9 +820,9 @@ public class ServiceStateTracker extends Handler {
          }
  
          mSS = new ServiceState();
@@ -38,16 +51,16 @@ index e516c05afd..8ea2c0d198 100644
          mLastCellInfoReqTime = 0;
          mLastCellInfoList = null;
          mStartedGprsRegCheck = false;
-@@ -3379,7 +3379,7 @@ public class ServiceStateTracker extends Handler {
+@@ -2773,7 +2773,7 @@ public class ServiceStateTracker extends Handler {
          NetworkRegistrationInfo nri = mNewSS.getNetworkRegistrationInfo(
                  NetworkRegistrationInfo.DOMAIN_PS,
                  AccessNetworkConstants.TRANSPORT_TYPE_WLAN);
 -        mNewSS.setOutOfService(radioOff);
-+        mNewSS.setOutOfService(mAccessNetworksManager.isInLegacyMode(),radioOff);
++        mNewSS.setOutOfService(mAccessNetworksManager.isInLegacyMode(), radioOff);
          // Add the IWLAN registration info back to service state.
          if (nri != null) {
              mNewSS.addNetworkRegistrationInfo(nri);
-@@ -3466,10 +3466,14 @@ public class ServiceStateTracker extends Handler {
+@@ -2871,10 +2871,14 @@ public class ServiceStateTracker extends Handler {
                  mSS.getState() == ServiceState.STATE_POWER_OFF
                          && mNewSS.getState() != ServiceState.STATE_POWER_OFF;
  
@@ -66,7 +79,7 @@ index e516c05afd..8ea2c0d198 100644
          boolean anyDataRegChanged = false;
          boolean anyDataRatChanged = false;
          boolean hasAlphaRawChanged =
-@@ -3655,7 +3659,7 @@ public class ServiceStateTracker extends Handler {
+@@ -3040,7 +3044,7 @@ public class ServiceStateTracker extends Handler {
          ServiceState oldMergedSS = new ServiceState(mPhone.getServiceState());
          mSS = new ServiceState(mNewSS);
  
@@ -74,8 +87,8 @@ index e516c05afd..8ea2c0d198 100644
 +        mNewSS.setOutOfService(mAccessNetworksManager.isInLegacyMode(), false);
  
          mCellIdentity = primaryCellIdentity;
-         if (mSS.getState() == ServiceState.STATE_IN_SERVICE && primaryCellIdentity != null) {
-@@ -5531,7 +5535,8 @@ public class ServiceStateTracker extends Handler {
+         boolean isCsRegistered = mSS.getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_CS,
+@@ -4555,7 +4559,8 @@ public class ServiceStateTracker extends Handler {
      }
  
      /**
@@ -85,7 +98,7 @@ index e516c05afd..8ea2c0d198 100644
       */
      private void processIwlanRegistrationInfo() {
          if (mCi.getRadioState() == TelephonyManager.RADIO_POWER_OFF) {
-@@ -5545,7 +5550,7 @@ public class ServiceStateTracker extends Handler {
+@@ -4569,7 +4574,7 @@ public class ServiceStateTracker extends Handler {
              }
              // operator info should be kept in SS
              String operator = mNewSS.getOperatorAlphaLong();
@@ -94,8 +107,8 @@ index e516c05afd..8ea2c0d198 100644
              if (resetIwlanRatVal) {
                  mNewSS.setDataRegState(ServiceState.STATE_IN_SERVICE);
                  NetworkRegistrationInfo nri = new NetworkRegistrationInfo.Builder()
-@@ -5555,6 +5560,17 @@ public class ServiceStateTracker extends Handler {
-                         .setRegistrationState(NetworkRegistrationInfo.REGISTRATION_STATE_HOME)
+@@ -4580,6 +4585,17 @@ public class ServiceStateTracker extends Handler {
+                         .setAvailableServices(List.of(NetworkRegistrationInfo.SERVICE_TYPE_DATA))
                          .build();
                  mNewSS.addNetworkRegistrationInfo(nri);
 +                if (mAccessNetworksManager.isInLegacyMode()) {
@@ -112,10 +125,12 @@ index e516c05afd..8ea2c0d198 100644
                  mNewSS.setOperatorAlphaLong(operator);
                  // Since it's in airplane mode, cellular must be out of service. The only possible
                  // transport for data to go through is the IWLAN transport. Setting this to true
-@@ -5564,6 +5580,31 @@ public class ServiceStateTracker extends Handler {
+@@ -4587,6 +4603,32 @@ public class ServiceStateTracker extends Handler {
+                 mNewSS.setIwlanPreferred(true);
+                 log("pollStateDone: mNewSS = " + mNewSS);
              }
-             return;
-         }
++            return;
++        }
 +
 +        // If the device operates in legacy mode and camps on IWLAN, modem reports IWLAN as a RAT
 +        // through WWAN registration info. To be consistent with the behavior with AP-assisted mode,
@@ -140,12 +155,11 @@ index e516c05afd..8ea2c0d198 100644
 +                        .build();
 +                mNewSS.addNetworkRegistrationInfo(wlanNri);
 +            }
-+        }
+         }
      }
  
-     private void updateNtnCapability() {
 diff --git a/src/java/com/android/internal/telephony/data/AccessNetworksManager.java b/src/java/com/android/internal/telephony/data/AccessNetworksManager.java
-index 3d3fbe959c..8ba5581bf6 100644
+index 65c462a411..80f2e86910 100644
 --- a/src/java/com/android/internal/telephony/data/AccessNetworksManager.java
 +++ b/src/java/com/android/internal/telephony/data/AccessNetworksManager.java
 @@ -16,9 +16,12 @@
@@ -169,15 +183,14 @@ index 3d3fbe959c..8ba5581bf6 100644
  import android.telephony.AccessNetworkConstants;
  import android.telephony.AccessNetworkConstants.AccessNetworkType;
  import android.telephony.AccessNetworkConstants.RadioAccessNetworkType;
-@@ -54,6 +58,7 @@ import android.util.SparseArray;
+@@ -54,12 +58,15 @@ import android.util.SparseArray;
  
  import com.android.internal.telephony.IIntegerConsumer;
  import com.android.internal.telephony.Phone;
 +import com.android.internal.telephony.RIL;
  import com.android.internal.telephony.SlidingWindowEventCounter;
  import com.android.internal.telephony.flags.FeatureFlags;
- import com.android.internal.util.FunctionalUtils;
-@@ -61,6 +66,8 @@ import com.android.telephony.Rlog;
+ import com.android.telephony.Rlog;
  
  import java.io.FileDescriptor;
  import java.io.PrintWriter;
@@ -186,7 +199,7 @@ index 3d3fbe959c..8ba5581bf6 100644
  import java.util.ArrayList;
  import java.util.Arrays;
  import java.util.List;
-@@ -79,6 +86,35 @@ import java.util.stream.Collectors;
+@@ -77,6 +84,35 @@ import java.util.stream.Collectors;
   */
  public class AccessNetworksManager extends Handler {
      private static final boolean DBG = false;
@@ -222,26 +235,28 @@ index 3d3fbe959c..8ba5581bf6 100644
  
      /** Event to guide a transport type for initial data connection of emergency data network. */
      private static final int EVENT_GUIDE_TRANSPORT_TYPE_FOR_EMERGENCY = 1;
-@@ -408,22 +444,30 @@ public class AccessNetworksManager extends Handler {
+@@ -399,26 +435,36 @@ public class AccessNetworksManager extends Handler {
                  Context.CARRIER_CONFIG_SERVICE);
          mLogTag = "ANM-" + mPhone.getPhoneId();
          mApnTypeToQnsChangeNetworkCounter = new SparseArray<>();
 -        mAvailableTransports = new int[]{AccessNetworkConstants.TRANSPORT_TYPE_WWAN,
 -                AccessNetworkConstants.TRANSPORT_TYPE_WLAN};
          mFeatureFlags = featureFlags;
--
+ 
 -        // bindQualifiedNetworksService posts real work to handler thread. So here we can
 -        // let the callback execute in binder thread to avoid post twice.
--        mCarrierConfigManager.registerCarrierConfigChangeListener(Runnable::run,
--                (slotIndex, subId, carrierId, specificCarrierId) -> {
--                    if (slotIndex != mPhone.getPhoneId()) return;
--                    // We should wait for carrier config changed event because the target binding
--                    // package name can come from the carrier config. Note that we still get this
--                    // event even when SIM is absent.
--                    if (DBG) log("Carrier config changed. Try to bind qualified network service.");
--                    bindQualifiedNetworksService();
--                });
--        bindQualifiedNetworksService();
+-        if (mCarrierConfigManager != null) {
+-            mCarrierConfigManager.registerCarrierConfigChangeListener(Runnable::run,
+-                    (slotIndex, subId, carrierId, specificCarrierId) -> {
+-                        if (slotIndex != mPhone.getPhoneId()) return;
+-                        // We should wait for carrier config changed event because the target
+-                        // binding package name can come from the carrier config. Note that we still
+-                        // get this event even when SIM is absent.
+-                        if (DBG) {
+-                            log("Carrier config changed. Try to bind qualified network service.");
+-                        }
+-                        bindQualifiedNetworksService();
+-                    });
 +        if (isInLegacyMode()) {
 +            log("operates in legacy mode.");
 +            // For legacy mode, WWAN is the only transport to handle all data connections, even
@@ -254,21 +269,27 @@ index 3d3fbe959c..8ba5581bf6 100644
 +
 +            // bindQualifiedNetworksService posts real work to handler thread. So here we can
 +            // let the callback execute in binder thread to avoid post twice.
-+            mCarrierConfigManager.registerCarrierConfigChangeListener(Runnable::run,
-+                    (slotIndex, subId, carrierId, specificCarrierId) -> {
-+                        if (slotIndex != mPhone.getPhoneId()) return;
-+                        // We should wait for carrier config changed event because the target binding
-+                        // package name can come from the carrier config. Note that we still get this
-+                        // event even when SIM is absent.
-+                        if (DBG) log("Carrier config changed. Try to bind qualified network service.");
-+                        bindQualifiedNetworksService();
-+                    });
++            if (mCarrierConfigManager != null) {
++                mCarrierConfigManager.registerCarrierConfigChangeListener(Runnable::run,
++                        (slotIndex, subId, carrierId, specificCarrierId) -> {
++                            if (slotIndex != mPhone.getPhoneId()) return;
++                            // We should wait for carrier config changed event because the target
++                            // binding package name can come from the carrier config. Note that we
++                            // still get this event even when SIM is absent.
++                            if (DBG) {
++                                log("Carrier config changed. Try to bind qualified network "
++                                        + "service.");
++                            }
++                            bindQualifiedNetworksService();
++                        });
++            }
 +            bindQualifiedNetworksService();
-+        }
+         }
+-        bindQualifiedNetworksService();
  
          // Using post to delay the registering because data retry manager and data config
          // manager instances are created later than access networks manager.
-@@ -528,7 +572,8 @@ public class AccessNetworksManager extends Handler {
+@@ -524,7 +570,8 @@ public class AccessNetworksManager extends Handler {
      /**
       * Get the qualified network service package.
       *
@@ -278,14 +299,15 @@ index 3d3fbe959c..8ba5581bf6 100644
       */
      private String getQualifiedNetworksServicePackageName() {
          // Read package name from the resource
-@@ -617,9 +662,30 @@ public class AccessNetworksManager extends Handler {
+@@ -614,10 +661,30 @@ public class AccessNetworksManager extends Handler {
      }
  
      /**
 -     * @return The available transports.
 +     * @return {@code true} if the device operates in legacy mode, otherwise {@code false}.
       */
--    public @NonNull int[] getAvailableTransports() {
+-    @NonNull
+-    public int[] getAvailableTransports() {
 +    public boolean isInLegacyMode() {
 +        // Get IWLAN operation mode from the system property. If the system property is configured
 +        // to default or not configured, the mode is tied to IRadio version. For 1.4 or above, it's
@@ -311,10 +333,13 @@ index 3d3fbe959c..8ba5581bf6 100644
          return mAvailableTransports;
      }
  
-@@ -657,6 +723,11 @@ public class AccessNetworksManager extends Handler {
+@@ -655,8 +722,12 @@ public class AccessNetworksManager extends Handler {
+      * @param apnType APN type
       * @return The preferred transport.
       */
-     public @TransportType int getPreferredTransport(@ApnType int apnType) {
+-    @TransportType
+-    public int getPreferredTransport(@ApnType int apnType) {
++    public @TransportType int getPreferredTransport(@ApnType int apnType) {
 +        // In legacy mode, always preferred on cellular.
 +        if (isInLegacyMode()) {
 +            return AccessNetworkConstants.TRANSPORT_TYPE_WWAN;
@@ -334,10 +359,10 @@ index 3d3fbe959c..8ba5581bf6 100644
          pw.increaseIndent();
          mLocalLog.dump(fd, pw, args);
 diff --git a/src/java/com/android/internal/telephony/data/DataNetworkController.java b/src/java/com/android/internal/telephony/data/DataNetworkController.java
-index 70d3b23142..fa67c0daf5 100644
+index 2e9527564c..cd091ee8ad 100644
 --- a/src/java/com/android/internal/telephony/data/DataNetworkController.java
 +++ b/src/java/com/android/internal/telephony/data/DataNetworkController.java
-@@ -1039,10 +1039,12 @@ public class DataNetworkController extends Handler {
+@@ -1111,10 +1111,12 @@ public class DataNetworkController extends Handler {
          mDataServiceManagers.get(AccessNetworkConstants.TRANSPORT_TYPE_WWAN)
                  .registerForServiceBindingChanged(this, EVENT_DATA_SERVICE_BINDING_CHANGED);
  
@@ -354,11 +379,29 @@ index 70d3b23142..fa67c0daf5 100644
  
          mPhone.getContext().getSystemService(TelephonyRegistryManager.class)
                  .addOnSubscriptionsChangedListener(new OnSubscriptionsChangedListener() {
+diff --git a/src/java/com/android/internal/telephony/data/DataRetryManager.java b/src/java/com/android/internal/telephony/data/DataRetryManager.java
+index 318c4b5171..a552aa871d 100644
+--- a/src/java/com/android/internal/telephony/data/DataRetryManager.java
++++ b/src/java/com/android/internal/telephony/data/DataRetryManager.java
+@@ -1030,9 +1030,10 @@ public class DataRetryManager extends Handler {
+                 DataRetryManager.this.onCarrierConfigUpdated();
+             }
+         });
+-
+-        for (int transport : mPhone.getAccessNetworksManager().getAvailableTransports()) {
+-            mDataServiceManagers.get(transport)
++        mDataServiceManagers.get(AccessNetworkConstants.TRANSPORT_TYPE_WWAN)
++                .registerForApnUnthrottled(this, EVENT_DATA_PROFILE_UNTHROTTLED);
++        if (!mPhone.getAccessNetworksManager().isInLegacyMode()) {
++            mDataServiceManagers.get(AccessNetworkConstants.TRANSPORT_TYPE_WLAN)
+                     .registerForApnUnthrottled(this, EVENT_DATA_PROFILE_UNTHROTTLED);
+         }
+         mDataProfileManager.registerCallback(new DataProfileManagerCallback(this::post) {
 diff --git a/src/java/com/android/internal/telephony/imsphone/ImsPhone.java b/src/java/com/android/internal/telephony/imsphone/ImsPhone.java
-index a6bb1d66f0..2ebaca52ad 100644
+index 8d837c3580..1f55655552 100644
 --- a/src/java/com/android/internal/telephony/imsphone/ImsPhone.java
 +++ b/src/java/com/android/internal/telephony/imsphone/ImsPhone.java
-@@ -492,7 +492,11 @@ public class ImsPhone extends ImsPhoneBase {
+@@ -503,7 +503,11 @@ public class ImsPhone extends ImsPhoneBase {
          mCT.registerPhoneStateListener(mExternalCallTracker);
          mExternalCallTracker.setCallPuller(mCT);
  
@@ -371,7 +414,7 @@ index a6bb1d66f0..2ebaca52ad 100644
  
          mPhoneId = mDefaultPhone.getPhoneId();
  
-@@ -2422,7 +2426,7 @@ public class ImsPhone extends ImsPhoneBase {
+@@ -2438,7 +2442,7 @@ public class ImsPhone extends ImsPhoneBase {
      /**
       * Update roaming state and WFC mode in the following situations:
       *     1) voice is in service.
@@ -380,7 +423,7 @@ index a6bb1d66f0..2ebaca52ad 100644
       * @param ss non-null ServiceState
       */
      private void updateRoamingState(ServiceState ss) {
-@@ -2443,7 +2447,15 @@ public class ImsPhone extends ImsPhoneBase {
+@@ -2460,7 +2464,15 @@ public class ImsPhone extends ImsPhoneBase {
              logi("updateRoamingState: we are not IN_SERVICE, ignoring roaming change.");
              return;
          }
@@ -396,8 +439,8 @@ index a6bb1d66f0..2ebaca52ad 100644
 +        }
          if (mCT.getState() == PhoneConstants.State.IDLE) {
              if (DBG) logd("updateRoamingState now: " + newRoamingState);
-             if (!mFeatureFlags.updateRoamingStateToSetWfcMode()) {
-@@ -2467,6 +2479,30 @@ public class ImsPhone extends ImsPhoneBase {
+ 
+@@ -2480,6 +2492,30 @@ public class ImsPhone extends ImsPhoneBase {
          }
      }
  
@@ -428,6 +471,47 @@ index a6bb1d66f0..2ebaca52ad 100644
      public RegistrationManager.RegistrationCallback getImsMmTelRegistrationCallback() {
          return mImsMmTelRegistrationHelper.getCallback();
      }
+diff --git a/tests/telephonytests/src/com/android/internal/telephony/data/AccessNetworksManagerTest.java b/tests/telephonytests/src/com/android/internal/telephony/data/AccessNetworksManagerTest.java
+index 1203510770..86386bc77c 100644
+--- a/tests/telephonytests/src/com/android/internal/telephony/data/AccessNetworksManagerTest.java
++++ b/tests/telephonytests/src/com/android/internal/telephony/data/AccessNetworksManagerTest.java
+@@ -18,6 +18,7 @@ package com.android.internal.telephony.data;
+ 
+ import static com.google.common.truth.Truth.assertThat;
+ 
++import static org.junit.Assume.assumeFalse;
+ import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.ArgumentMatchers.anyInt;
+ import static org.mockito.ArgumentMatchers.anyString;
+@@ -158,7 +159,7 @@ public class AccessNetworksManagerTest extends TelephonyTest {
+         processAllMessages();
+         replaceInstance(AccessNetworksManager.class, "mDataConfigManager",
+                 mAccessNetworksManager, mMockedDataConfigManager);
+-
++        assumeFalse(mAccessNetworksManager.isInLegacyMode());
+         logd("-setUp");
+     }
+ 
+diff --git a/tests/telephonytests/src/com/android/internal/telephony/imsphone/ImsPhoneTest.java b/tests/telephonytests/src/com/android/internal/telephony/imsphone/ImsPhoneTest.java
+index 2b29eeac0f..0213cf8bc0 100644
+--- a/tests/telephonytests/src/com/android/internal/telephony/imsphone/ImsPhoneTest.java
++++ b/tests/telephonytests/src/com/android/internal/telephony/imsphone/ImsPhoneTest.java
+@@ -815,6 +815,7 @@ public class ImsPhoneTest extends TelephonyTest {
+     @Test
+     @SmallTest
+     public void testRoamingToAirplanModeIwlanInService() throws Exception {
++        doReturn(true).when(mAccessNetworksManager).isInLegacyMode();
+         doReturn(PhoneConstants.State.IDLE).when(mImsCT).getState();
+         doReturn(true).when(mPhone).isRadioOn();
+ 
+@@ -842,6 +843,7 @@ public class ImsPhoneTest extends TelephonyTest {
+     @Test
+     @SmallTest
+     public void testRoamingToOutOfService() throws Exception {
++        doReturn(true).when(mAccessNetworksManager).isInLegacyMode();
+         doReturn(PhoneConstants.State.IDLE).when(mImsCT).getState();
+         doReturn(true).when(mPhone).isRadioOn();
+ 
 -- 
-2.34.1
+2.43.0
 

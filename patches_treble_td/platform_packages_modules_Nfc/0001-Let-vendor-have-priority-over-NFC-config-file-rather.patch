@@ -1,6 +1,6 @@
-From a80b3c0b76ab20318bddaba2c344e0406caebbfd Mon Sep 17 00:00:00 2001
+From f7bfda2360f91cdbd000ebbdee01c9f56d07dfe2 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Mon, 21 Dec 2020 19:36:54 +0100
+Date: Tue, 11 Aug 2026 09:51:52 +0000
 Subject: [PATCH] Let vendor have priority over NFC config file, rather than
  GSI
 
@@ -8,22 +8,22 @@ Thanks @mikalovtch
 
 Change-Id: Iaee468f3b8e5c8ec90ca7e856a6526d1cbcaa33e
 ---
- src/adaptation/nfc_config.cc | 2 +-
+ libnfc-nci/src/adaptation/nfc_config.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/adaptation/nfc_config.cc b/src/adaptation/nfc_config.cc
-index f635fd50..15d42cab 100644
---- a/src/adaptation/nfc_config.cc
-+++ b/src/adaptation/nfc_config.cc
-@@ -30,7 +30,7 @@ using namespace ::android::base;
+diff --git a/libnfc-nci/src/adaptation/nfc_config.cc b/libnfc-nci/src/adaptation/nfc_config.cc
+index c60733ae8..0ebd1223d 100644
+--- a/libnfc-nci/src/adaptation/nfc_config.cc
++++ b/libnfc-nci/src/adaptation/nfc_config.cc
+@@ -36,7 +36,7 @@ static std::mutex config_mutex;
  namespace {
  std::string searchConfigPath(std::string file_name) {
    const std::vector<std::string> search_path = {
 -      "/product/etc/", "/odm/etc/", "/vendor/etc/", "/system_ext/etc/", "/etc/",
 +      "/odm/etc/", "/vendor/etc/", "/product/etc/", "/system_ext/etc/", "/etc/",
+       "/apex/com.android.nfcservices/etc/"
    };
    for (std::string path : search_path) {
-     path.append(file_name);
 -- 
-2.25.1
+2.43.0
 

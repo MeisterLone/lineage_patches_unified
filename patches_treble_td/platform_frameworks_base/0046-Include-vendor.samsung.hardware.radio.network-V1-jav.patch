@@ -1,25 +1,28 @@
-From 66a169e155ad58d7ad2f1b38d9139a225b0308f0 Mon Sep 17 00:00:00 2001
+From 42906f4bee5585605c1af40b376e232ac9b7036e Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Wed, 21 Feb 2024 12:41:46 -0500
-Subject: [PATCH 46/51] Include vendor.samsung.hardware.radio.network-V1-java
- in base libs, will be used by f/o/telephony
+Date: Tue, 11 Aug 2026 09:12:54 +0000
+Subject: [PATCH] Include vendor.samsung.hardware.radio.network-V1-java in base
+ libs, will be used by f/o/telephony
 
+[Port to A16] Radio HAL libs bumped V3->V5 upstream; samsung lib inserted after android.hardware.radio.network-V5-java.
+
+Change-Id: I642cca19f0de883dd41ddcf7ea258fe696349a67
 ---
  Android.bp | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/Android.bp b/Android.bp
-index af1074b7a998..ca9c8a600028 100644
+index 939c2417a627..1ede4ccf8731 100644
 --- a/Android.bp
 +++ b/Android.bp
-@@ -240,6 +240,7 @@ java_library {
-         "android.hardware.radio.messaging-V3-java",
-         "android.hardware.radio.modem-V3-java",
-         "android.hardware.radio.network-V3-java",
+@@ -232,6 +232,7 @@ java_library {
+         "android.hardware.radio.messaging-V5-java",
+         "android.hardware.radio.modem-V5-java",
+         "android.hardware.radio.network-V5-java",
 +        "vendor.samsung.hardware.radio.network-V1-java",
-         "android.hardware.radio.sim-V3-java",
-         "android.hardware.radio.voice-V3-java",
+         "android.hardware.radio.sim-V5-java",
+         "android.hardware.radio.voice-V5-java",
          "android.hardware.thermal-V1.0-java-constants",
 -- 
-2.34.1
+2.43.0
 

@@ -1,24 +1,27 @@
-From 8d090a934b549dc7619d83a8f8a395dd3847c0e9 Mon Sep 17 00:00:00 2001
+From 4716b0357d77447c89c11010d59769cadbe3157c Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Mon, 29 Jan 2024 17:07:07 -0500
-Subject: [PATCH 43/51] Add Samsung sysinput
+Date: Tue, 11 Aug 2026 09:12:12 +0000
+Subject: [PATCH] Add Samsung sysinput
 
+[Port to A16] Added sysinput-V1-java to the AIDL lib group.
+
+Change-Id: Ifc8d1de2dd8710df57fc5c68ecb4fbeea717ae2f
 ---
  services/core/Android.bp | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index 5e8a5bc0916c..8f547e246298 100644
+index f731ff8e2fb7..c5ab025fc016 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -266,6 +266,7 @@ java_library_static {
-         "vendor.xiaomi.hardware.fingerprintextension-V1.0-java",
+@@ -246,6 +246,7 @@ java_library_static {
+         "vendor.samsung.hardware.sysinput-V1.2-java",
  
          //AIDL
 +        "vendor.samsung.hardware.sysinput-V1-java",
          "vendor.samsung.hardware.biometrics.fingerprint-V1-java",
          "vendor.samsung.hardware.light-V1-java",
-     ],
+         "connectivity_flags_lib",
 -- 
-2.34.1
+2.43.0
 

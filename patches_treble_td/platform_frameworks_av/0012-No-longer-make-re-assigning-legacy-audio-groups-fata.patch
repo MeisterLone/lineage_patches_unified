@@ -1,4 +1,4 @@
-From 958fc690726a71004bd0264664968b2bd8eb08ae Mon Sep 17 00:00:00 2001
+From 62bb1d74650064c49ffd67b206bdb4b668be34f9 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 12 Sep 2020 12:32:50 +0200
 Subject: [PATCH 12/24] No longer make re-assigning legacy audio groups fatal.
@@ -11,10 +11,10 @@ Change-Id: I794fe22d63a8af705be4f5f09b9879ecaab3eae5
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/services/audiopolicy/engine/common/src/EngineBase.cpp b/services/audiopolicy/engine/common/src/EngineBase.cpp
-index e259e6e048..abd8786b4a 100644
+index 4589fab983..591e346db0 100644
 --- a/services/audiopolicy/engine/common/src/EngineBase.cpp
 +++ b/services/audiopolicy/engine/common/src/EngineBase.cpp
-@@ -264,9 +264,9 @@ engineConfig::ParsingResult EngineBase::processParsingResult(
+@@ -285,9 +285,9 @@ engineConfig::ParsingResult EngineBase::processParsingResult(
              }
              if (group.stream != AUDIO_STREAM_DEFAULT) {
                  // A legacy stream can be assigned once to a volume group
@@ -28,5 +28,5 @@ index e259e6e048..abd8786b4a 100644
              }
              addSupportedAttributesToGroup(group, volumeGroup, strategy);
 -- 
-2.34.1
+2.43.0
 

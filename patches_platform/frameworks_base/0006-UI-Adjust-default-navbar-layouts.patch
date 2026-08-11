@@ -1,12 +1,16 @@
-From 95388febcf538f6c8f2a7425a1dd65187dbb2484 Mon Sep 17 00:00:00 2001
+From 682702465e1dcdd73086768ada49199577bfdb47 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sat, 16 Oct 2021 02:23:48 +0000
-Subject: [PATCH 06/45] UI: Adjust default navbar layouts
+Date: Tue, 11 Aug 2026 09:19:36 +0000
+Subject: [PATCH] UI: Adjust default navbar layouts
 
 - Slightly tighten nodpi layout
 - Remove sw372dp layout - looks terrible, probably meant for legacy phablets, but most modern phones qualify
 
 Change-Id: Ia32f5d92e6c9e36560c53e7dffce7d2c29a81fe5
+
+[Port to A16] Targets unchanged upstream (sw372dp file still present, .5W default). Context-only drift in neighboring quickstep line.
+
+Change-Id: Ib4f9be746a42d795f1f596cbf08e0fb0ac177656
 ---
  .../SystemUI/res/values-sw372dp/config.xml    | 25 -------------------
  packages/SystemUI/res/values/config.xml       |  2 +-
@@ -45,18 +49,18 @@ index 07b797a32428..000000000000
 -    <string name="config_navBarLayout" translatable="false">left[.25W],back[.5WC];home;recent[.5WC],right[.25W]</string>
 -</resources>
 diff --git a/packages/SystemUI/res/values/config.xml b/packages/SystemUI/res/values/config.xml
-index 2124ad9edca9..0286cc65c8e2 100644
+index e0bc1ec0e01a..42e9ffc3bb18 100644
 --- a/packages/SystemUI/res/values/config.xml
 +++ b/packages/SystemUI/res/values/config.xml
-@@ -325,7 +325,7 @@
+@@ -381,7 +381,7 @@
      </string-array>
  
      <!-- Nav bar button default ordering/layout -->
 -    <string name="config_navBarLayout" translatable="false">left[.5W],back[1WC];home;recent[1WC],right[.5W]</string>
 +    <string name="config_navBarLayout" translatable="false">left[.6W],back[1WC];home;recent[1WC],right[.6W]</string>
-     <string name="config_navBarLayoutQuickstep" translatable="false">back[1.7WC];home;menu_ime[1.7WC]</string>
+     <string name="config_navBarLayoutQuickstep" translatable="false">back[1.7WC];home;contextual[1.7WC]</string>
      <string name="config_navBarLayoutHandle" translatable="false">back[70AC];home_handle;ime_switcher[70AC]</string>
  
 -- 
-2.34.1
+2.43.0
 

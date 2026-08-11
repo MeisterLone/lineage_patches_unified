@@ -1,32 +1,34 @@
-From c873fccac513afe6a49d522a604607c6348f8043 Mon Sep 17 00:00:00 2001
+From 38efdc60028496d4eb032ee6dc59144f29178129 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Tue, 17 Oct 2023 11:08:06 -0400
-Subject: [PATCH 10/14] When logging UiccSlot, ignore error if we cant print
+Date: Tue, 11 Aug 2026 09:19:30 +0000
+Subject: [PATCH 09/13] When logging UiccSlot, ignore error if we cant print
  IccIds
 
+Change-Id: Idaa031eb6ece53df7fa8f635c7229431d3c0f43c
 ---
  .../com/android/internal/telephony/uicc/UiccSlot.java     | 8 +++++++-
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/src/java/com/android/internal/telephony/uicc/UiccSlot.java b/src/java/com/android/internal/telephony/uicc/UiccSlot.java
-index 6c69863c29..99d3ab8d55 100644
+index 110e953752..9f8c09f43a 100644
 --- a/src/java/com/android/internal/telephony/uicc/UiccSlot.java
 +++ b/src/java/com/android/internal/telephony/uicc/UiccSlot.java
-@@ -688,7 +688,13 @@ public class UiccSlot extends Handler {
+@@ -791,8 +791,14 @@ public class UiccSlot extends Handler {
      @NonNull
      @Override
      public String toString() {
--        return "[UiccSlot: mActive=" + mActive + ", mIccId=" + getPrintableIccIds() + ", mIsEuicc="
 +        Map<Integer,String> printableIccIds = null;
 +        try {
 +            printableIccIds = getPrintableIccIds();
 +        } catch(Throwable t) {
 +            android.util.Log.e("PHH", "getPrintableIccIds failed", t);
 +        }
-+        return "[UiccSlot: mActive=" + mActive + ", mIccId=" + printableIccIds + ", mIsEuicc="
-                 + mIsEuicc + ", MEP=" + isMultipleEnabledProfileSupported() + ", mPortIdxToPhoneId="
+         StringBuilder sb = new StringBuilder("[UiccSlot: mActive=" + mActive
+-                + ", mIccId=" + getPrintableIccIds() + ", mIsEuicc=" + mIsEuicc
++                + ", mIccId=" + printableIccIds + ", mIsEuicc=" + mIsEuicc
+                 + ", MEP=" + isMultipleEnabledProfileSupported() + ", mPortIdxToPhoneId="
                  + mPortIdxToPhoneId + ", mEid=" + Rlog.pii(TelephonyUtils.IS_DEBUGGABLE, mEid)
-                 + ", mCardState=" + mCardState + " mSupportedMepMode=" + mSupportedMepMode + "]";
+                 + ", mCardState=" + mCardState + " mSupportedMepMode=" + mSupportedMepMode);
 -- 
-2.34.1
+2.43.0
 

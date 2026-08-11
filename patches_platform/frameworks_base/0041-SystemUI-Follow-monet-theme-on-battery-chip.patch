@@ -1,11 +1,15 @@
-From 37f6236572232a1bfd0e2d9829ed706ae87cdb09 Mon Sep 17 00:00:00 2001
+From 862385ce2eb6eeaf893e44a2227b0bf9626cb91a Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Wed, 10 Jan 2024 23:36:41 +0800
-Subject: [PATCH 41/45] SystemUI: Follow monet theme on battery chip
+Date: Tue, 11 Aug 2026 09:53:05 +0000
+Subject: [PATCH] SystemUI: Follow monet theme on battery chip
 
 Why does this chip even exist...
 
 Change-Id: I178fdda5d8d310c4c7fa5f05f9911b3f94986cb9
+
+[Port to A16] A16 BatteryStatusChip dropped settingslib flags import block and BatteryColors import; Utils import added before BatteryMeterView import. updateResources body identical.
+
+Change-Id: I42913322947a491901f2866ac88a979ba42c4f45
 ---
  packages/SystemUI/res/drawable/statusbar_chip_bg.xml      | 8 +++-----
  .../com/android/systemui/statusbar/BatteryStatusChip.kt   | 6 ++++++
@@ -30,18 +34,18 @@ index d7de16d7c5bb..dd1db04e77d7 100644
 \ No newline at end of file
 +</shape>
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/BatteryStatusChip.kt b/packages/SystemUI/src/com/android/systemui/statusbar/BatteryStatusChip.kt
-index a58ce4162ddc..32c015f3230d 100644
+index bff15bd8922f..6a60947d2a9d 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/BatteryStatusChip.kt
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/BatteryStatusChip.kt
-@@ -23,6 +23,7 @@ import android.view.View
+@@ -22,6 +22,7 @@ import android.util.AttributeSet
+ import android.view.View
  import android.widget.FrameLayout
  import android.widget.LinearLayout
- import com.android.settingslib.flags.Flags.newStatusBarIcons
 +import com.android.settingslib.Utils
  import com.android.systemui.battery.BatteryMeterView
- import com.android.systemui.battery.unified.BatteryColors
  import com.android.systemui.res.R
-@@ -71,6 +72,11 @@ class BatteryStatusChip @JvmOverloads constructor(context: Context, attrs: Attri
+ import com.android.systemui.statusbar.core.NewStatusBarIcons
+@@ -68,6 +69,11 @@ class BatteryStatusChip @JvmOverloads constructor(context: Context, attrs: Attri
  
      @SuppressLint("UseCompatLoadingForDrawables")
      private fun updateResources() {
@@ -54,5 +58,5 @@ index a58ce4162ddc..32c015f3230d 100644
      }
  }
 -- 
-2.34.1
+2.43.0
 

@@ -1,7 +1,7 @@
-From db43d982a0a90a00c50cdfb324d4d11e6f67a0a7 Mon Sep 17 00:00:00 2001
+From 9551017e68d62d05f4bf1ad796b7f230cf1505c7 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 25 Feb 2024 10:23:29 -0500
-Subject: [PATCH 14/14] When reading SMSC, ignore invalid SMSC
+Subject: [PATCH 13/13] When reading SMSC, ignore invalid SMSC
 
 On Samsung, when reading SMSC we get weird strings like
 "4392084000100",149
@@ -31,7 +31,7 @@ index 19211e15f5..3ddf6762dd 100644
      }
  
 diff --git a/src/java/com/android/internal/telephony/RadioResponse.java b/src/java/com/android/internal/telephony/RadioResponse.java
-index fe0ea2db93..729e95918c 100644
+index 71bb2e5b75..87cb4ad615 100644
 --- a/src/java/com/android/internal/telephony/RadioResponse.java
 +++ b/src/java/com/android/internal/telephony/RadioResponse.java
 @@ -1267,6 +1267,8 @@ public class RadioResponse extends IRadioResponse.Stub {
@@ -44,5 +44,5 @@ index fe0ea2db93..729e95918c 100644
      }
  
 -- 
-2.34.1
+2.43.0
 

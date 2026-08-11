@@ -1,24 +1,23 @@
-From 41e8ad63296998bdadb9d2a148720bf4949fe809 Mon Sep 17 00:00:00 2001
-From: Danny Lin <danny@kdrag0n.dev>
-Date: Wed, 6 Oct 2021 18:40:30 -0700
-Subject: [PATCH 22/45] Revert "Make QS always use dark theme colors"
-
-This reverts commit d62f7249f9e3222da95ecf6816601c408aac6be5.
-
-This is a prerequisite for making the QS panel follow the light system
-theme setting.
+From f1e0fb351e051f6c2d663b43bb68b810827619ec Mon Sep 17 00:00:00 2001
+From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
+Date: Tue, 11 Aug 2026 09:38:24 +0000
+Subject: [PATCH] Revert "Make QS always use dark theme colors"
 
 Change-Id: Iac4c96ccb3845812ca3df820bf27dc533816f72e
+
+[Port to A16] Style parent unchanged upstream; context drifted only.
+
+Change-Id: Ie78368363d151217d3efbc0baa64bca4b5798a47
 ---
  packages/SystemUI/res/values/styles.xml | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/packages/SystemUI/res/values/styles.xml b/packages/SystemUI/res/values/styles.xml
-index ae354d634f67..7422d5a14221 100644
+index 4aba03b2c146..e3adee94733b 100644
 --- a/packages/SystemUI/res/values/styles.xml
 +++ b/packages/SystemUI/res/values/styles.xml
-@@ -412,7 +412,7 @@
-         <item name="containerStyle">@style/AuthCredentialPinPasswordContainerStyle</item>
+@@ -530,7 +530,7 @@
+         <item name="containerStyle">@style/AuthNonBioCredentialPinPasswordContainerStyle</item>
      </style>
  
 -    <style name="Theme.SystemUI.QuickSettings" parent="@*android:style/Theme.DeviceDefault">
@@ -27,5 +26,5 @@ index ae354d634f67..7422d5a14221 100644
          <item name="lightIconTheme">@style/QSIconTheme</item>
          <item name="darkIconTheme">@style/QSIconTheme</item>
 -- 
-2.34.1
+2.43.0
 

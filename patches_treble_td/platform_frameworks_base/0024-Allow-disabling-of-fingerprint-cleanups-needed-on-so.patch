@@ -1,26 +1,33 @@
-From 44471da6ce761a2ff56142d8051bb701d5960d81 Mon Sep 17 00:00:00 2001
-From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sat, 2 Apr 2022 18:04:01 -0400
-Subject: [PATCH 24/51] Allow disabling of fingerprint cleanups, needed on some
+From 5f7cd780f362445cc7fec9113ff5f25d851bc85d Mon Sep 17 00:00:00 2001
+From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
+Date: Tue, 11 Aug 2026 15:02:54 +0000
+Subject: [PATCH] Allow disabling of fingerprint cleanups, needed on some
  Realme devices that cant enumerate
 
----
- .../biometrics/sensors/fingerprint/hidl/Fingerprint21.java      | 2 ++
- 1 file changed, 2 insertions(+)
+[Port to A16] Target moved from the deleted HIDL Fingerprint21 to
+FingerprintProvider.scheduleInternalCleanup (4-arg overload, which the 2-arg
+overload delegates to), after the prerequisite revert removed the LineageOS
+config gate.
 
-diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
-index 33e448bbe612..387693f2737d 100644
---- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
-+++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
-@@ -1007,6 +1007,8 @@ public class Fingerprint21 implements IHwBinder.DeathRecipient, ServiceProvider
- 
-     private void scheduleInternalCleanup(int userId,
-             @Nullable ClientMonitorCallback callback) {
-+	final boolean mNocleanup = android.os.SystemProperties.getBoolean("persist.sys.phh.fingerprint.nocleanup", false);
-+	if(mNocleanup) return;
+Change-Id: I6c31a812c36e2126b3f2abd6ccd76ce952549600
+---
+ .../sensors/fingerprint/aidl/FingerprintProvider.java          | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
+index 48d6a7df76a6..6eb4d034c925 100644
+--- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
++++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
+@@ -679,6 +679,9 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+     @Override
+     public void scheduleInternalCleanup(int sensorId, int userId,
+             @Nullable ClientMonitorCallback callback, boolean favorHalEnrollments) {
++        final boolean mNocleanup = android.os.SystemProperties.getBoolean(
++                "persist.sys.phh.fingerprint.nocleanup", false);
++        if (mNocleanup) return;
          mHandler.post(() -> {
-             scheduleUpdateActiveUserWithoutHandler(userId);
- 
+             final FingerprintInternalCleanupClient client =
+                     new FingerprintInternalCleanupClient(mContext,
 -- 
-2.34.1
+2.43.0
 

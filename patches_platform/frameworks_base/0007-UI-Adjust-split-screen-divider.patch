@@ -1,13 +1,17 @@
-From 00ce8a490784f8303a042a81d07e73508dc90639 Mon Sep 17 00:00:00 2001
+From cee9992101096f1a9be672cb4babb9fedc9d9218 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sat, 19 Mar 2022 09:22:24 +0000
-Subject: [PATCH 07/45] UI: Adjust split-screen divider
+Date: Tue, 11 Aug 2026 09:21:38 +0000
+Subject: [PATCH] UI: Adjust split-screen divider
 
 - Kill rounded corners - where two rectangles collide should be perfectly straight
 - Make it black (pre-Sv2) for phones
 - Follow taskbar theme for tablets
 
 Change-Id: I240b627793b615c82bd07ebd77638cde180ef80f
+
+[Port to A16] updateDividerConfig body and colors.xml values identical upstream; 5 new res files carried verbatim.
+
+Change-Id: Ic1c7cd4ce82c0b483014fb99110315ae56feca23
 ---
  .../color-night-v31/taskbar_background.xml    | 20 +++++++++++++++++
  .../taskbar_nav_icon_color.xml                | 18 +++++++++++++++
@@ -150,12 +154,12 @@ index 000000000000..8a1907da76e5
 +    <color name="split_divider_background">@color/taskbar_background</color>
 +</resources>
 diff --git a/libs/WindowManager/Shell/res/values/colors.xml b/libs/WindowManager/Shell/res/values/colors.xml
-index 758dbfd5f3c5..e82f6ff9a4db 100644
+index 5732fc936b47..2164ffdc2404 100644
 --- a/libs/WindowManager/Shell/res/values/colors.xml
 +++ b/libs/WindowManager/Shell/res/values/colors.xml
-@@ -18,7 +18,7 @@
- -->
- <resources>
+@@ -19,7 +19,7 @@
+ <resources
+     xmlns:androidprv="http://schemas.android.com/apk/prv/res/android">
      <color name="docked_divider_handle">#ffffff</color>
 -    <color name="split_divider_background">@color/taskbar_background_dark</color>
 +    <color name="split_divider_background">@android:color/black</color>
@@ -163,10 +167,10 @@ index 758dbfd5f3c5..e82f6ff9a4db 100644
      <color name="minimize_dock_shadow_start">#60000000</color>
      <color name="minimize_dock_shadow_end">#00000000</color>
 diff --git a/libs/WindowManager/Shell/src/com/android/wm/shell/common/split/SplitLayout.java b/libs/WindowManager/Shell/src/com/android/wm/shell/common/split/SplitLayout.java
-index 6b2d544c192a..7c4db20d8cd8 100644
+index 9a846ed28129..b7c5bba9a8f3 100644
 --- a/libs/WindowManager/Shell/src/com/android/wm/shell/common/split/SplitLayout.java
 +++ b/libs/WindowManager/Shell/src/com/android/wm/shell/common/split/SplitLayout.java
-@@ -168,23 +168,8 @@ public final class SplitLayout implements DisplayInsetsController.OnInsetsChange
+@@ -266,23 +266,8 @@ public final class SplitLayout implements DisplayInsetsController.OnInsetsChange
      }
  
      private void updateDividerConfig(Context context) {
@@ -191,7 +195,7 @@ index 6b2d544c192a..7c4db20d8cd8 100644
 +                R.dimen.split_divider_bar_width);
      }
  
-     /** Gets bounds of the primary split with screen based coordinate. */
+     /** Gets the bounds of the top/left app in screen-based coordinates. */
 -- 
-2.34.1
+2.43.0
 

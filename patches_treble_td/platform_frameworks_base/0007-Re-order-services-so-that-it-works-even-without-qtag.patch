@@ -1,18 +1,22 @@
-From 831dcfef08229154dee1300a8224f527d43e8b53 Mon Sep 17 00:00:00 2001
+From 81b76056229c126eb1884d305be8a5ce23ad6ba1 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Thu, 8 Nov 2018 23:04:03 +0100
-Subject: [PATCH 07/51] Re-order services so that it works even without qtaguid
+Date: Tue, 11 Aug 2026 08:49:48 +0000
+Subject: [PATCH] Re-order services so that it works even without qtaguid
 
 Change-Id: I0c0f527b3ae151d45c68f7ac6c205da3f34e74df
+
+[Port to A16] Same reorder; context refreshed for A16-added aconfig flag lines after the LocalServices block.
+
+Change-Id: I945e8c17c09695a47662bb3c7d8d7b6f162dcff9
 ---
  .../android/server/net/NetworkPolicyManagerService.java   | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/services/core/java/com/android/server/net/NetworkPolicyManagerService.java b/services/core/java/com/android/server/net/NetworkPolicyManagerService.java
-index 53637d2c5f44..3465e1b31b6c 100644
+index d81103ca52d5..aed7f4ca8388 100644
 --- a/services/core/java/com/android/server/net/NetworkPolicyManagerService.java
 +++ b/services/core/java/com/android/server/net/NetworkPolicyManagerService.java
-@@ -1032,6 +1032,10 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
+@@ -1071,6 +1071,10 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
          Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "systemReady");
          final int oldPriority = Process.getThreadPriority(Process.myTid());
          try {
@@ -23,7 +27,7 @@ index 53637d2c5f44..3465e1b31b6c 100644
              // Boost thread's priority during system server init
              Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
              if (!isBandwidthControlEnabled()) {
-@@ -1039,10 +1043,6 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
+@@ -1078,10 +1082,6 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                  return;
              }
  
@@ -31,9 +35,9 @@ index 53637d2c5f44..3465e1b31b6c 100644
 -            mAppStandby = LocalServices.getService(AppStandbyInternal.class);
 -            mActivityManagerInternal = LocalServices.getService(ActivityManagerInternal.class);
 -
-             synchronized (mUidRulesFirstLock) {
-                 synchronized (mNetworkPoliciesSecondLock) {
-                     updatePowerSaveAllowlistUL();
+             mUseMeteredFirewallChains = Flags.useMeteredFirewallChains();
+             mUseDifferentDelaysForBackgroundChain = Flags.useDifferentDelaysForBackgroundChain();
+             mNeverApplyRulesToCoreUids = Flags.neverApplyRulesToCoreUids();
 -- 
-2.34.1
+2.43.0
 

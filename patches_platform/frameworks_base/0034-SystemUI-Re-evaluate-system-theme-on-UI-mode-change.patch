@@ -1,37 +1,37 @@
-From c850241052cd0163d8c70daf06dbbbad846cf9e8 Mon Sep 17 00:00:00 2001
-From: althafvly <althafvly@gmail.com>
-Date: Tue, 26 May 2020 21:17:59 +0800
-Subject: [PATCH 34/45] SystemUI: Re-evaluate system theme on UI mode change
+From 8cb8f62790119860692345a11812c587a6e15229 Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Tue, 11 Aug 2026 09:49:28 +0000
+Subject: [PATCH] SystemUI: Re-evaluate system theme on UI mode change
 
-- Need for power menu to set accurate colors
+[Port to A16] Constructor gained SystemPropertiesHelper etc; ConfigurationController param appended at end. Same listener/registration.
 
-Change-Id: I05d41eaf8ea19ce3b6ce659d01da33cf55de3b7e
+Change-Id: I30d888864c1ff3c31b3845598b350ead07b32c04
 ---
- .../systemui/theme/ThemeOverlayController.java  | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ .../systemui/theme/ThemeOverlayController.java | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
-index 321429e43573..84e32a1dbaae 100644
+index 553f18512fcc..1879680f62ac 100644
 --- a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
 +++ b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
-@@ -80,6 +80,8 @@ import com.android.systemui.monet.ColorScheme;
- import com.android.systemui.monet.Style;
- import com.android.systemui.monet.TonalPalette;
+@@ -84,6 +84,8 @@ import com.android.systemui.keyguard.shared.model.KeyguardState;
+ import com.android.systemui.monet.ColorScheme;
+ import com.android.systemui.monet.DynamicColors;
  import com.android.systemui.settings.UserTracker;
 +import com.android.systemui.statusbar.policy.ConfigurationController;
 +import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
  import com.android.systemui.statusbar.policy.DeviceProvisionedController;
  import com.android.systemui.statusbar.policy.DeviceProvisionedController.DeviceProvisionedListener;
- import com.android.systemui.util.kotlin.JavaAdapter;
-@@ -143,6 +145,7 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+ import com.android.systemui.user.utils.UserScopedService;
+@@ -140,6 +142,7 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+     private final Context mContext;
      private final boolean mIsMonetEnabled;
-     private final boolean mIsFidelityEnabled;
      private final UserTracker mUserTracker;
 +    private final ConfigurationController mConfigurationController;
      private final DeviceProvisionedController mDeviceProvisionedController;
      private final Resources mResources;
      // Current wallpaper colors associated to a user.
-@@ -184,6 +187,15 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+@@ -186,6 +189,15 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
      // Determines if we should ignore THEME_CUSTOMIZATION_OVERLAY_PACKAGES setting changes.
      private boolean mSkipSettingChange;
  
@@ -47,28 +47,29 @@ index 321429e43573..84e32a1dbaae 100644
      private final DeviceProvisionedListener mDeviceProvisionedListener =
              new DeviceProvisionedListener() {
                  @Override
-@@ -425,10 +437,12 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
-             JavaAdapter javaAdapter,
-             KeyguardTransitionInteractor keyguardTransitionInteractor,
-             UiModeManager uiModeManager,
--            ActivityManager activityManager) {
-+            ActivityManager activityManager,
-+            ConfigurationController configurationController) {
+@@ -450,10 +462,12 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+             UiModeManager uiModeManager, // TODO(b/362682063) legacy argument, remove
+             UserScopedService<UiModeManager> uiModeManagerProvider,
+             ActivityManager activityManager,
+-            SystemPropertiesHelper systemPropertiesHelper
++            SystemPropertiesHelper systemPropertiesHelper,
++            ConfigurationController configurationController
+     ) {
          mContext = context;
          mIsMonetEnabled = featureFlags.isEnabled(Flags.MONET);
-         mIsFidelityEnabled = featureFlags.isEnabled(Flags.COLOR_FIDELITY);
 +        mConfigurationController = configurationController;
          mDeviceProvisionedController = deviceProvisionedController;
          mBroadcastDispatcher = broadcastDispatcher;
          mUserManager = userManager;
-@@ -543,6 +557,7 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+@@ -553,6 +567,8 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+         }
  
          mUserTracker.addCallback(mUserTrackerCallback, mMainExecutor);
- 
++
 +        mConfigurationController.addCallback(mConfigurationListener);
          mDeviceProvisionedController.addCallback(mDeviceProvisionedListener);
  
-         // All wallpaper color and keyguard logic only applies when Monet is enabled.
+ 
 -- 
-2.34.1
+2.43.0
 

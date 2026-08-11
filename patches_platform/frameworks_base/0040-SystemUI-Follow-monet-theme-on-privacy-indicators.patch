@@ -1,42 +1,42 @@
-From c7043cc547ee078673e72e4c36caa1e1d96f3a4f Mon Sep 17 00:00:00 2001
-From: minaripenguin <minaripenguin@users.noreply.github.com>
-Date: Fri, 24 Mar 2023 13:04:06 +0800
-Subject: [PATCH 40/45] SystemUI: Follow monet theme on privacy indicators
+From 56111ec04d9df52536e0b6b0fe105104d6fb4167 Mon Sep 17 00:00:00 2001
+From: Pranav Vashi <neobuddy89@gmail.com>
+Date: Tue, 11 Aug 2026 09:52:24 +0000
+Subject: [PATCH] SystemUI: Follow monet theme on privacy indicators
 
-Change-Id: Ib713cb3283fcf3a49086c5da8360d2a1b6cd6704
-Signed-off-by: minaripenguin <minaripenguin@users.noreply.github.com>
-Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+[Port to A16] Identical edits; A16 re-indented OngoingPrivacyChip.updateResources.
+
+Change-Id: Ib5ffaba9d90b5d30fabb3a21432558894826632d
 ---
  packages/SystemUI/res/values/colors.xml                         | 2 +-
  .../src/com/android/systemui/privacy/OngoingPrivacyChip.kt      | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/packages/SystemUI/res/values/colors.xml b/packages/SystemUI/res/values/colors.xml
-index 402e44c3fb31..50b962310ac9 100644
+index f65b09df925d..cd4a4ff95996 100644
 --- a/packages/SystemUI/res/values/colors.xml
 +++ b/packages/SystemUI/res/values/colors.xml
-@@ -224,7 +224,7 @@
+@@ -249,7 +249,7 @@
      <color name="screenrecord_status_color">#E94235</color>
      <color name="screenrecord_icon_color">#D93025</color><!-- red 600 -->
  
 -    <color name="privacy_chip_background">#3ddc84</color>
 +    <color name="privacy_chip_background">?android:attr/colorAccent</color>
+     <color name="privacy_chip_location_only_background">#3dbaf4</color>
  
      <!-- Accessibility floating menu -->
-     <color name="accessibility_floating_menu_background">#CCFFFFFF</color> <!-- 80% -->
 diff --git a/packages/SystemUI/src/com/android/systemui/privacy/OngoingPrivacyChip.kt b/packages/SystemUI/src/com/android/systemui/privacy/OngoingPrivacyChip.kt
-index 7a4be3fdc93b..19ac5fccac5f 100644
+index 3f606640e7a3..ce7ec810950b 100644
 --- a/packages/SystemUI/src/com/android/systemui/privacy/OngoingPrivacyChip.kt
 +++ b/packages/SystemUI/src/com/android/systemui/privacy/OngoingPrivacyChip.kt
-@@ -125,7 +125,7 @@ class OngoingPrivacyChip @JvmOverloads constructor(
-         iconSize = context.resources
-                 .getDimensionPixelSize(R.dimen.ongoing_appops_chip_icon_size)
+@@ -157,7 +157,7 @@ constructor(
+             context.resources.getDimensionPixelSize(R.dimen.ongoing_appops_chip_icon_margin)
+         iconSize = context.resources.getDimensionPixelSize(R.dimen.ongoing_appops_chip_icon_size)
          iconColor =
--                Utils.getColorAttrDefaultColor(context, com.android.internal.R.attr.colorPrimary)
-+                Utils.getColorAttrDefaultColor(context, android.R.attr.textColorPrimaryInverse)
+-            Utils.getColorAttrDefaultColor(context, com.android.internal.R.attr.colorPrimary)
++            Utils.getColorAttrDefaultColor(context, android.R.attr.textColorPrimaryInverse)
  
-         val height = context.resources
-                 .getDimensionPixelSize(R.dimen.ongoing_appops_chip_height)
+         val height = context.resources.getDimensionPixelSize(R.dimen.ongoing_appops_chip_height)
+         val padding =
 -- 
-2.34.1
+2.43.0
 

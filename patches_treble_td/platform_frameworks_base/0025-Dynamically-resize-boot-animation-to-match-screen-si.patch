@@ -1,46 +1,50 @@
-From 29254fbb9a0ad465268f85693c66891231dbffe4 Mon Sep 17 00:00:00 2001
+From f2d0342e6859f6d50218b22ad5622003d89438f2 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Mon, 20 Dec 2021 15:01:41 -0500
-Subject: [PATCH 25/51] Dynamically resize boot animation to match screen size
+Date: Tue, 11 Aug 2026 08:56:10 +0000
+Subject: [PATCH] Dynamically resize boot animation to match screen size
 
 Change-Id: I54e49fc6b8c670103852e212d1416e27ff976205
+
+[Port to A16] readyToRun() refactored to per-display initDisplaysAndSurfaces(); resize block inserted in the display loop guarded by displayIdx==0, mWidth -> display.width. mAnimation is still preloaded via onFirstRef()->preloadAnimation().
+
+Change-Id: I658fe7213d27e94e9c89f6f4879afbcbb4a830e8
 ---
  cmds/bootanimation/BootAnimation.cpp | 22 ++++++++++++++++++++++
  1 file changed, 22 insertions(+)
 
 diff --git a/cmds/bootanimation/BootAnimation.cpp b/cmds/bootanimation/BootAnimation.cpp
-index 58d8ebf25e96..5329e6528b4c 100644
+index 29768246da75..8bcd81753671 100644
 --- a/cmds/bootanimation/BootAnimation.cpp
 +++ b/cmds/bootanimation/BootAnimation.cpp
-@@ -635,6 +635,28 @@ status_t BootAnimation::readyToRun() {
-     mFlingerSurface = s;
-     mTargetInset = -1;
+@@ -577,6 +577,28 @@ status_t BootAnimation::initDisplaysAndSurfaces() {
+         display.initHeight = display.height = h;
+         mTargetInset = -1;
  
-+    if ( mAnimation != nullptr ) {
-+        SLOGE("Got screen size %d, animation size %d", mWidth, mAnimation->width);
-+        int origWidth = mAnimation->width;
-+        if ( mAnimation->width*2 < mWidth ) {
-+            SLOGE("Making animation bigger");
-+            mAnimation->width *= 2;
-+            mAnimation->height *= 2;
-+        } else if ( mWidth < mAnimation->width ) {
-+            SLOGE("Making animation smaller");
-+            mAnimation->width /= 2;
-+            mAnimation->height /= 2;
-+        }
-+        for (Animation::Part& part : mAnimation->parts) {
-+            for(auto& frame: part.frames) {
-+                if(frame.trimWidth == origWidth && frame.trimX == 0 && frame.trimY == 0) {
-+                    frame.trimWidth = mAnimation->width;
-+                    frame.trimHeight = mAnimation->height;
++        if (displayIdx == 0 && mAnimation != nullptr) {
++            SLOGE("Got screen size %d, animation size %d", display.width, mAnimation->width);
++            int origWidth = mAnimation->width;
++            if ( mAnimation->width*2 < display.width ) {
++                SLOGE("Making animation bigger");
++                mAnimation->width *= 2;
++                mAnimation->height *= 2;
++            } else if ( display.width < mAnimation->width ) {
++                SLOGE("Making animation smaller");
++                mAnimation->width /= 2;
++                mAnimation->height /= 2;
++            }
++            for (Animation::Part& part : mAnimation->parts) {
++                for(auto& frame: part.frames) {
++                    if(frame.trimWidth == origWidth && frame.trimX == 0 && frame.trimY == 0) {
++                        frame.trimWidth = mAnimation->width;
++                        frame.trimHeight = mAnimation->height;
++                    }
 +                }
 +            }
 +        }
-+    }
 +
-     // Rotate the boot animation according to the value specified in the sysprop
-     // ro.bootanim.set_orientation_<display_id>. Four values are supported: ORIENTATION_0,
-     // ORIENTATION_90, ORIENTATION_180 and ORIENTATION_270.
+         // Rotate the boot animation according to the value specified in the sysprop
+         // ro.bootanim.set_orientation_<display_id>. Four values are supported: ORIENTATION_0,
+         // ORIENTATION_90, ORIENTATION_180 and ORIENTATION_270.
 -- 
-2.34.1
+2.43.0
 

@@ -1,29 +1,32 @@
-From 7779cfb1015aa9cf7940986cdfd6bbc471106871 Mon Sep 17 00:00:00 2001
-From: Pierre-Hugues Husson <phh@phh.me>
-Date: Wed, 4 Sep 2019 21:11:48 +0200
-Subject: [PATCH 04/26] Panic into recovery rather than bootloader
+From a29c17b4269bccd5fed0d15d2851dfcda21a06b6 Mon Sep 17 00:00:00 2001
+From: port-worker <port-worker@local>
+Date: Tue, 11 Aug 2026 08:43:31 +0000
+Subject: [PATCH 04/27] Panic into recovery rather than bootloader
 
 Getting last_kmsg/pstore from bootloader isn't possible for other people
 than the OEM, but we have TWRP to access last_kmsg/pstore
 
 Change-Id: If04bb6572dc66677d7b44f7d302b2d69ce526200
+[forward-ported to A16: line gained [[clang::no_destroy]] attribute]
+
+Change-Id: I1d6abab8831e31f2452b25891fa2b3660ef9a900
 ---
  init/reboot_utils.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/init/reboot_utils.cpp b/init/reboot_utils.cpp
-index 547b1869f..dd0fbbfe8 100644
+index 85a707bfd..84a729850 100644
 --- a/init/reboot_utils.cpp
 +++ b/init/reboot_utils.cpp
 @@ -37,7 +37,7 @@
  namespace android {
  namespace init {
  
--static std::string init_fatal_reboot_target = "bootloader";
-+static std::string init_fatal_reboot_target = "recovery";
+-[[clang::no_destroy]] static std::string init_fatal_reboot_target = "bootloader";
++[[clang::no_destroy]] static std::string init_fatal_reboot_target = "recovery";
  static bool init_fatal_panic = false;
  
  // this needs to read the /proc/* files directly because it is called before
 -- 
-2.34.1
+2.43.0
 

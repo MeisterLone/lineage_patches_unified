@@ -1,26 +1,26 @@
-From 866681350d2dbcb5370b5dbfd23cd7fd07342af5 Mon Sep 17 00:00:00 2001
-From: Pranav Vashi <neobuddy89@gmail.com>
-Date: Tue, 16 Apr 2024 21:32:43 +0530
-Subject: [PATCH 31/45] SystemUI: monet: Remove unused colorSchemeIsApplied
+From 7ece2b8a8fed13d5e645097bc3432aef84a04ef0 Mon Sep 17 00:00:00 2001
+From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
+Date: Tue, 11 Aug 2026 09:46:45 +0000
+Subject: [PATCH] SystemUI: monet: Remove unused colorSchemeIsApplied
 
-Usage for this was removed in
-https://github.com/crdroidandroid/android_frameworks_base/commit/e09dc531860bbe4e9c21e57a7eb59351078e1e4f
+[Port to A16] Method body drifted upstream (MaterialDynamicColors ctor, mDarkColorScheme); whole-method removal applied to A16 version.
 
-Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Change-Id: Id9a0b0426d423912972a4c61dea8a0499d821136
 ---
- .../theme/ThemeOverlayController.java         | 38 -------------------
- 1 file changed, 38 deletions(-)
+ .../theme/ThemeOverlayController.java         | 42 -------------------
+ 1 file changed, 42 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
-index 3fe5fe4ef8c7..321429e43573 100644
+index c3ce071e6ed3..553f18512fcc 100644
 --- a/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
 +++ b/packages/SystemUI/src/com/android/systemui/theme/ThemeOverlayController.java
-@@ -754,44 +754,6 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
+@@ -747,48 +747,6 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
          });
      }
  
 -    /**
 -     * Checks if the color scheme in mColorScheme matches the current system palettes.
+-     *
 -     * @param managedProfiles List of managed profiles for this user.
 -     */
 -    private boolean colorSchemeIsApplied(Set<UserHandle> managedProfiles) {
@@ -30,7 +30,7 @@ index 3fe5fe4ef8c7..321429e43573 100644
 -            Resources res = userHandle.isSystem()
 -                    ? mResources : mContext.createContextAsUser(userHandle, 0).getResources();
 -            Resources.Theme theme = mContext.getTheme();
--            MaterialDynamicColors dynamicColors = new MaterialDynamicColors(mIsFidelityEnabled);
+-            MaterialDynamicColors dynamicColors = new MaterialDynamicColors();
 -            if (!(res.getColor(android.R.color.system_accent1_500, theme)
 -                    == mColorScheme.getAccent1().getS500()
 -                    && res.getColor(android.R.color.system_accent2_500, theme)
@@ -42,24 +42,27 @@ index 3fe5fe4ef8c7..321429e43573 100644
 -                    && res.getColor(android.R.color.system_neutral2_500, theme)
 -                    == mColorScheme.getNeutral2().getS500()
 -                    && res.getColor(android.R.color.system_outline_variant_dark, theme)
--                    == dynamicColors.outlineVariant().getArgb(mDynamicSchemeDark)
+-                    == dynamicColors.outlineVariant().getArgb(mDarkColorScheme.getMaterialScheme())
 -                    && res.getColor(android.R.color.system_outline_variant_light, theme)
--                    == dynamicColors.outlineVariant().getArgb(mDynamicSchemeLight)
+-                    == dynamicColors.outlineVariant().getArgb(mLightColorScheme.getMaterialScheme())
 -                    && res.getColor(android.R.color.system_primary_container_dark, theme)
--                    == dynamicColors.primaryContainer().getArgb(mDynamicSchemeDark)
+-                    == dynamicColors.primaryContainer().getArgb(
+-                    mDarkColorScheme.getMaterialScheme())
 -                    && res.getColor(android.R.color.system_primary_container_light, theme)
--                    == dynamicColors.primaryContainer().getArgb(mDynamicSchemeLight)
+-                    == dynamicColors.primaryContainer().getArgb(
+-                    mLightColorScheme.getMaterialScheme())
 -                    && res.getColor(android.R.color.system_primary_fixed, theme)
--                    == dynamicColors.primaryFixed().getArgb(mDynamicSchemeLight))) {
+-                    == dynamicColors.primaryFixed().getArgb(
+-                    mLightColorScheme.getMaterialScheme()))) {
 -                return false;
 -            }
 -        }
 -        return true;
 -    }
 -
+     @SuppressWarnings("StringCaseLocaleUsage") // Package name is not localized
      private void updateThemeOverlays() {
          final int currentUser = mUserTracker.getUserId();
-         final String overlayPackageJson = mSecureSettings.getStringForUser(
 -- 
-2.34.1
+2.43.0
 

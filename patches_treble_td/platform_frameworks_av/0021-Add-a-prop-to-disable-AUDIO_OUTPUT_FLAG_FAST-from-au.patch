@@ -1,4 +1,4 @@
-From 12536fe15af67eea0aa575396e7c84eba1b1a57e Mon Sep 17 00:00:00 2001
+From f4ae4bfa02e6c90ac1b12236a0802deb6fd37026 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 30 Oct 2023 10:30:58 -0400
 Subject: [PATCH 21/24] Add a prop to disable AUDIO_OUTPUT_FLAG_FAST from audio
@@ -24,5 +24,5 @@ index 77a96b47a4..26edcaa1c4 100644
                  intFlags = AUDIO_OUTPUT_FLAG_SPATIALIZER;
              }
 -- 
-2.34.1
+2.43.0
 

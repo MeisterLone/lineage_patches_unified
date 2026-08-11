@@ -1,7 +1,7 @@
-From 7a2219f355f39292430f59d24d5c7f794d021678 Mon Sep 17 00:00:00 2001
+From 657614dcd650b02c71e7e6530014eb12cfca986e Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Fri, 1 Nov 2019 18:22:13 +0100
-Subject: [PATCH 06/26] Ugly but secure: Set /dev/uinput as 0666 to fix
+Subject: [PATCH 06/27] Ugly but secure: Set /dev/uinput as 0666 to fix
  fingerprint sensor on some devices
 
 cf https://github.com/phhusson/device_phh_treble/pull/122/commits/e000d69c286b6686777ea6f1867f379e30273e48
@@ -15,10 +15,10 @@ Change-Id: Id374e781957927d5604cb96c7a39b3fb28b3a6c5
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/rootdir/ueventd.rc b/rootdir/ueventd.rc
-index 3927501a4..d0ab3f7bb 100644
+index 2ff86a5e9..9dab96c8d 100644
 --- a/rootdir/ueventd.rc
 +++ b/rootdir/ueventd.rc
-@@ -60,7 +60,7 @@ subsystem vfio
+@@ -63,7 +63,7 @@ subsystem vfio
  
  # these should not be world writable
  /dev/uhid                 0660   uhid       uhid
@@ -28,5 +28,5 @@ index 3927501a4..d0ab3f7bb 100644
  /dev/tty0                 0660   root       system
  /dev/graphics/*           0660   root       graphics
 -- 
-2.34.1
+2.43.0
 

@@ -1,40 +1,44 @@
-From aadce93c923e2c8faa16e6d0e115b587c5b8c014 Mon Sep 17 00:00:00 2001
+From 3cb777bec152fcccea5192e8af4f798f99d35dbc Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Wed, 14 Dec 2022 17:21:00 -0500
-Subject: [PATCH 28/51] Call Samsung's ISehSysInputDev to report screen state
- to touchscreen driver
+Date: Tue, 11 Aug 2026 09:00:24 +0000
+Subject: [PATCH] Call Samsung's ISehSysInputDev to report screen state to
+ touchscreen driver
 
 This fixes touchscreen not waking up on Galaxy F23
+
+[Port to A16] Anchors intact; context refreshed. Requires vendor.samsung.hardware.sysinput-V1.2-java from vendor/interfaces (TD layer).
+
+Change-Id: Ic6d30db44211aba218662f5e3fc3eafcbaaa1405
 ---
  services/core/Android.bp                      |  1 +
  .../server/display/LocalDisplayAdapter.java   | 31 +++++++++++++++++++
  2 files changed, 32 insertions(+)
 
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index 5106e7695401..e7ed90dffb9d 100644
+index e08be355a068..de960b6c294d 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -256,6 +256,7 @@ java_library_static {
+@@ -241,6 +241,7 @@ java_library_static {
          "net_flags_lib",
          "stats_flags_lib",
          "core_os_flags_lib",
 +        "vendor.samsung.hardware.sysinput-V1.2-java", // HIDL
-     ],
-     javac_shard_size: 50,
-     javacflags: [
+         "connectivity_flags_lib",
+         "device_config_service_flags_java",
+         "aconfig_new_storage_flags_lib",
 diff --git a/services/core/java/com/android/server/display/LocalDisplayAdapter.java b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
-index 88c24e0a7eff..ac4a9c474c9e 100644
+index 3da7874f65fe..2ac231570620 100644
 --- a/services/core/java/com/android/server/display/LocalDisplayAdapter.java
 +++ b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
-@@ -38,6 +38,7 @@ import android.os.Trace;
+@@ -40,6 +40,7 @@ import android.os.Trace;
  import android.util.DisplayUtils;
  import android.util.LongSparseArray;
  import android.util.Slog;
 +import android.util.Log;
  import android.util.SparseArray;
+ import android.util.Spline;
  import android.view.Display;
- import android.view.DisplayAddress;
-@@ -58,6 +59,8 @@ import com.android.server.display.notifications.DisplayNotificationManager;
+@@ -63,6 +64,8 @@ import com.android.server.display.notifications.DisplayNotificationManager;
  import com.android.server.lights.LightsManager;
  import com.android.server.lights.LogicalLight;
  
@@ -43,7 +47,7 @@ index 88c24e0a7eff..ac4a9c474c9e 100644
  import java.io.PrintWriter;
  import java.util.ArrayList;
  import java.util.Arrays;
-@@ -251,6 +254,8 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+@@ -257,6 +260,8 @@ final class LocalDisplayAdapter extends DisplayAdapter {
  
          private DisplayEventReceiver.FrameRateOverride[] mFrameRateOverrides =
                  new DisplayEventReceiver.FrameRateOverride[0];
@@ -52,7 +56,7 @@ index 88c24e0a7eff..ac4a9c474c9e 100644
  
          LocalDisplayDevice(IBinder displayToken, long physicalDisplayId,
                  SurfaceControl.StaticDisplayInfo staticDisplayInfo,
-@@ -859,16 +864,42 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+@@ -960,10 +965,26 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                              }
                          }
  
@@ -77,8 +81,9 @@ index 88c24e0a7eff..ac4a9c474c9e 100644
 +                        }
 +
                          try {
+                             final long start = SystemClock.uptimeMillis();
                              mSurfaceControlProxy.setDisplayPowerMode(token, mode);
-                             Trace.traceCounter(Trace.TRACE_TAG_POWER, "DisplayPowerMode", mode);
+@@ -973,6 +994,16 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                          } finally {
                              Trace.traceEnd(Trace.TRACE_TAG_POWER);
                          }
@@ -96,5 +101,5 @@ index 88c24e0a7eff..ac4a9c474c9e 100644
  
                          // If we're entering a suspended (but not OFF) power state and we
 -- 
-2.34.1
+2.43.0
 

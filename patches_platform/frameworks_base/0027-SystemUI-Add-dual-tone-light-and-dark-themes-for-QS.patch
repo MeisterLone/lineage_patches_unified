@@ -1,41 +1,14 @@
-From f63f2c10203a236c685e252d3ae27df84dc15f5f Mon Sep 17 00:00:00 2001
+From 1f7e935217b3027228f60c04853ab8564076a0e9 Mon Sep 17 00:00:00 2001
 From: Danny Lin <danny@kdrag0n.dev>
-Date: Mon, 11 Oct 2021 19:25:08 -0700
-Subject: [PATCH 27/45] SystemUI: Add dual-tone light and dark themes for QS
-
-Google's dual-tone QS design where the notification panel has a
-semantically higher elevation adds depth to the notification+QS shade,
-and we don't necessarily have to give it up just because our QS has
-light and dark themes.
-
-To preserve the dual-tone effect, use a darker background color for the
-QS section:
-
-Light:
-    Notifications: neutral1 20 (surface_light)
-    Notification panel: neutral1 50 (light BG)
-    QS background: neutral1 100 (darker light BG / surface_header_light)
-    Inactive QS tiles: neutral1 20 (surface_light)
-
-Dark:
-    Notifications: neutral1 800 (surface_dark)
-    Notification panel: neutral1 900 (dark BG)
-    QS background: neutral1 950 (surface_header_dark_sysui modulated to L* 5)
-    Inactive QS tiles: neutral1 800 (surface_dark)
-
-The dark QS background could be neutral1 0 (black) like it was before,
-but I don't think it looks as good because it can't be tinted based on
-the active wallpaper and thus stands out from other colors.
-
-Unfortunately, Google's current CAM16-based modulation causes hue shifts
-in extreme light and dark shades (e.g. L* = 98 / 5), but we'll fix this
-by generating and overlaying modulated surface colors in our
-ThemeOverlayController implementation.
-
-Demo screenshots: https://twitter.com/kdrag0n/status/1445922541218922496
+Date: Tue, 11 Aug 2026 09:43:10 +0000
+Subject: [PATCH] SystemUI: Add dual-tone light and dark themes for QS
 
 Change-Id: Icdc4957ecb4e0201377351f1a3e1c6928d6b3955
 Signed-off-by: PainKiller3 <ninadpatil100@gmail.com>
+
+[Port to A16] updateThemeColors() refactored upstream (mColors final, mContext.getColor); mBehindColors wired the same way. colorSurfaceHeader resolved via com.android.settingslib.Utils.getColorAttrDefaultColor (A16 Utils location).
+
+Change-Id: I937e0549ee834955bf342b9b29f54212c38a1a80
 ---
  .../res/color/surface_header_dark_sysui.xml    | 18 ++++++++++++++++++
  core/res/res/values-night/values.xml           |  1 +
@@ -80,26 +53,26 @@ index 1571fab66a5b..0683c20a4a4c 100644
          <item name="alertDialogTheme">@style/Theme.DeviceDefault.Dialog.Alert</item>
          <item name="forceDarkAllowed">false</item>
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/ScrimController.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/ScrimController.java
-index 04c2e5005d34..aff0a571b0bf 100644
+index 0d953a3f5cac..6a8c85ce1274 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/ScrimController.java
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/ScrimController.java
-@@ -224,6 +224,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
+@@ -245,6 +245,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
      private final KeyguardInteractor mKeyguardInteractor;
  
-     private GradientColors mColors;
+     private final GradientColors mColors;
 +    private GradientColors mBehindColors;
      private boolean mNeedsDrawableColorUpdate;
  
      private float mAdditionalScrimBehindAlphaKeyguard = 0f;
-@@ -390,6 +391,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
+@@ -448,6 +449,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
+         mKeyguardTransitionInteractor = keyguardTransitionInteractor;
          mKeyguardInteractor = keyguardInteractor;
-         mWallpaperRepository = wallpaperRepository;
          mMainDispatcher = mainDispatcher;
 +        mBehindColors = new GradientColors();
      }
  
-     @Override
-@@ -1191,7 +1193,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
+     /**
+@@ -1311,7 +1313,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
                      && !mBlankScreen;
  
              mScrimInFront.setColors(mColors, animateScrimInFront);
@@ -108,29 +81,26 @@ index 04c2e5005d34..aff0a571b0bf 100644
              mNotificationsScrim.setColors(mColors, animateScrimNotifications);
  
              dispatchBackScrimState(mScrimBehind.getViewAlpha());
-@@ -1556,7 +1558,10 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
-         if (mScrimBehind == null) return;
-         int background = Utils.getColorAttr(mScrimBehind.getContext(),
-                 android.R.attr.colorBackgroundFloating).getDefaultColor();
-+        int surfaceBackground = Utils.getColorAttr(mScrimBehind.getContext(),
-+                com.android.internal.R.attr.colorSurfaceHeader).getDefaultColor();
-         int accent = Utils.getColorAccent(mScrimBehind.getContext()).getDefaultColor();
+@@ -1670,11 +1672,19 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
+                 com.android.internal.R.color.materialColorSurfaceDim);
+         int accent = mContext.getColor(
+                 com.android.internal.R.color.materialColorPrimary);
++        int surfaceBackground = com.android.settingslib.Utils.getColorAttrDefaultColor(
++                mScrimBehind.getContext(), com.android.internal.R.attr.colorSurfaceHeader);
 +
          mColors.setMainColor(background);
          mColors.setSecondaryColor(accent);
          final boolean isBackgroundLight = !ContrastColorUtil.isColorDark(background);
-@@ -1568,6 +1573,11 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener, Dump
-             state.setSurfaceColor(surface);
-         }
+         mColors.setSupportsDarkText(isBackgroundLight);
  
 +        mBehindColors.setMainColor(surfaceBackground);
 +        mBehindColors.setSecondaryColor(accent);
 +        mBehindColors.setSupportsDarkText(
 +                ColorUtils.calculateContrast(mBehindColors.getMainColor(), Color.WHITE) > 4.5);
 +
-         mNeedsDrawableColorUpdate = true;
-     }
- 
+         int surface;
+         if (Flags.bouncerUiRevamp()) {
+             surface = BouncerColors.surfaceColor(mContext, isBlurCurrentlySupported());
 -- 
-2.34.1
+2.43.0
 

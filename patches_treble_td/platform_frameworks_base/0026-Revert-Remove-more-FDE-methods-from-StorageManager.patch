@@ -1,21 +1,25 @@
-From d5427d078f946fc8b98cf2b6cfc882b44fbd2b85 Mon Sep 17 00:00:00 2001
+From dc3a646dbb5281ad6213f329b81eee8b5ed9f421 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sat, 15 Oct 2022 09:33:56 +0000
-Subject: [PATCH 26/51] Revert "Remove more FDE methods from StorageManager"
+Date: Tue, 11 Aug 2026 08:59:15 +0000
+Subject: [PATCH] Revert "Remove more FDE methods from StorageManager"
 
 This reverts commit bd13f84152449a3ead6fa8604fd31f48c0224676.
 
 Change-Id: Ic394934ec27b1a486c60123130825d44dad73412
+
+[Port to A16] Same methods re-added; A16 context drift (isEncrypted(File) overload, @hide vs {@hide} comment style) adjusted. UnsupportedAppUsage now from android.compat.annotation (already imported).
+
+Change-Id: I81d74fa43ed7fcce6bb64070d83258546f85cbac
 ---
  .../android/os/storage/StorageManager.java    | 74 +++++++++++++++++++
  .../internal/os/RoSystemProperties.java       |  4 +
  2 files changed, 78 insertions(+)
 
 diff --git a/core/java/android/os/storage/StorageManager.java b/core/java/android/os/storage/StorageManager.java
-index d45a17f7194e..6850e261e6ad 100644
+index e2ef800b5744..20fc080343c1 100644
 --- a/core/java/android/os/storage/StorageManager.java
 +++ b/core/java/android/os/storage/StorageManager.java
-@@ -1709,6 +1709,15 @@ public class StorageManager {
+@@ -1686,6 +1686,15 @@ public class StorageManager {
          return false;
      }
  
@@ -28,10 +32,10 @@ index d45a17f7194e..6850e261e6ad 100644
 +        return RoSystemProperties.CRYPTO_ENCRYPTABLE;
 +    }
 +
-     /** {@hide}
+     /**
+      * @hide
       * Is this device encrypted?
-      * <p>
-@@ -1733,6 +1742,71 @@ public class StorageManager {
+@@ -1713,6 +1722,71 @@ public class StorageManager {
          return RoSystemProperties.CRYPTO_FILE_ENCRYPTED;
      }
  
@@ -100,14 +104,14 @@ index d45a17f7194e..6850e261e6ad 100644
 +        return false;
 +    }
 +
-     /** {@hide} */
+     /** @hide */
      public static boolean hasAdoptable() {
          switch (SystemProperties.get(PROP_ADOPTABLE)) {
 diff --git a/core/java/com/android/internal/os/RoSystemProperties.java b/core/java/com/android/internal/os/RoSystemProperties.java
-index 40d5c4761dff..66288706b0f1 100644
+index 5311f7a163df..e202425ac5f8 100644
 --- a/core/java/com/android/internal/os/RoSystemProperties.java
 +++ b/core/java/com/android/internal/os/RoSystemProperties.java
-@@ -68,10 +68,14 @@ public class RoSystemProperties {
+@@ -70,10 +70,14 @@ public class RoSystemProperties {
      public static final CryptoProperties.type_values CRYPTO_TYPE =
              CryptoProperties.type().orElse(CryptoProperties.type_values.NONE);
      // These are pseudo-properties
@@ -123,5 +127,5 @@ index 40d5c4761dff..66288706b0f1 100644
      public static final boolean CONTROL_PRIVAPP_PERMISSIONS_LOG =
              "log".equalsIgnoreCase(CONTROL_PRIVAPP_PERMISSIONS);
 -- 
-2.34.1
+2.43.0
 

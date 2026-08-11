@@ -1,4 +1,4 @@
-From eae358283867bea937c4b9575e352a195d2def54 Mon Sep 17 00:00:00 2001
+From ba92070894408166b6f4b2edb90ebb7f463a074e Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Mon, 11 Oct 2021 16:10:42 -0400
 Subject: [PATCH 17/24] Revert "Remove support for audio HAL V2 from the
@@ -13,12 +13,12 @@ Change-Id: Icfd638a91b22ffa6d2cd6d19a624e699a85a850a
  media/libaudiohal/Android.bp                  |  1 +
  media/libaudiohal/FactoryHal.cpp              |  3 ++-
  media/libaudiohal/impl/Android.bp             | 26 +++++++++++++++++++
- media/libaudiohal/impl/DeviceHalHidl.cpp      | 10 +++++++
+ media/libaudiohal/impl/DeviceHalHidl.cpp      | 15 +++++++++++
  .../impl/DevicesFactoryHalHidl.cpp            |  4 +++
- 5 files changed, 43 insertions(+), 1 deletion(-)
+ 5 files changed, 48 insertions(+), 1 deletion(-)
 
 diff --git a/media/libaudiohal/Android.bp b/media/libaudiohal/Android.bp
-index b8d099897f..e4a11a3fa8 100644
+index 09f4282c05..d9b858c4a1 100644
 --- a/media/libaudiohal/Android.bp
 +++ b/media/libaudiohal/Android.bp
 @@ -23,6 +23,7 @@ cc_library_shared {
@@ -26,30 +26,29 @@ index b8d099897f..e4a11a3fa8 100644
  
      required: [
 +        "libaudiohal@2.0",
-         "libaudiohal@5.0",
          "libaudiohal@6.0",
          "libaudiohal@7.0",
+         "libaudiohal@7.1",
 diff --git a/media/libaudiohal/FactoryHal.cpp b/media/libaudiohal/FactoryHal.cpp
-index 15cb297b5c..c922dd184d 100644
+index 2c30693a61..3f2c033940 100644
 --- a/media/libaudiohal/FactoryHal.cpp
 +++ b/media/libaudiohal/FactoryHal.cpp
-@@ -50,12 +50,13 @@ using InterfaceName = std::pair<std::string, std::string>;
+@@ -50,11 +50,12 @@ using InterfaceName = std::pair<std::string, std::string>;
   * This list need to keep sync with AudioHalVersionInfo.VERSIONS in
   * media/java/android/media/AudioHalVersionInfo.java.
   */
--static const std::array<AudioHalVersionInfo, 5> sAudioHALVersions = {
-+static const std::array<AudioHalVersionInfo, 6> sAudioHALVersions = {
+-static const std::array<AudioHalVersionInfo, 4> sAudioHALVersions = {
++static const std::array<AudioHalVersionInfo, 5> sAudioHALVersions = {
      AudioHalVersionInfo(AudioHalVersionInfo::Type::AIDL, 1, 0),
      AudioHalVersionInfo(AudioHalVersionInfo::Type::HIDL, 7, 1),
      AudioHalVersionInfo(AudioHalVersionInfo::Type::HIDL, 7, 0),
      AudioHalVersionInfo(AudioHalVersionInfo::Type::HIDL, 6, 0),
-     AudioHalVersionInfo(AudioHalVersionInfo::Type::HIDL, 5, 0),
 +    AudioHalVersionInfo(AudioHalVersionInfo::Type::HIDL, 2, 0),
  };
  
  static const std::map<AudioHalVersionInfo::Type, InterfaceName> sDevicesHALInterfaces = {
 diff --git a/media/libaudiohal/impl/Android.bp b/media/libaudiohal/impl/Android.bp
-index 4d81f77d8e..23d7f0465b 100644
+index 00f3929bff..8b4d86ef9e 100644
 --- a/media/libaudiohal/impl/Android.bp
 +++ b/media/libaudiohal/impl/Android.bp
 @@ -82,6 +82,32 @@ cc_defaults {
@@ -83,13 +82,32 @@ index 4d81f77d8e..23d7f0465b 100644
 +}
 +
  cc_library_shared {
-     name: "libaudiohal@5.0",
+     name: "libaudiohal@6.0",
      defaults: [
 diff --git a/media/libaudiohal/impl/DeviceHalHidl.cpp b/media/libaudiohal/impl/DeviceHalHidl.cpp
-index ea4258c878..4d4e8a8717 100644
+index 01102d3dc8..5e262a748b 100644
 --- a/media/libaudiohal/impl/DeviceHalHidl.cpp
 +++ b/media/libaudiohal/impl/DeviceHalHidl.cpp
-@@ -587,6 +587,7 @@ status_t DeviceHalHidl::setConnectedState(const struct audio_port_v7 *port, bool
+@@ -275,6 +275,7 @@ status_t DeviceHalHidl::openOutputStream(
+         return status;
+     }
+ 
++#if MAJOR_VERSION >= 4
+ #if MAJOR_VERSION == 4
+     ::android::hardware::audio::CORE_TYPES_CPP_VERSION::SourceMetadata hidlMetadata;
+ #else
+@@ -284,6 +285,10 @@ status_t DeviceHalHidl::openOutputStream(
+     RETURN_STATUS_IF_ERROR(CoreUtils::sourceMetadataFromHalV7(
+             sourceMetadata, true /*ignoreNonVendorTags*/, &hidlMetadata
+             ));
++#else
++    // SourceMetadata and its converters only exist since HAL V4.
++    (void) sourceMetadata;
++#endif
+ 
+ #if !(MAJOR_VERSION == 7 && MINOR_VERSION == 1)
+     //TODO: b/193496180 use spatializer flag at audio HAL when available
+@@ -600,6 +605,7 @@ status_t DeviceHalHidl::setConnectedState(const struct audio_port_v7 *port, bool
          // call is successful. Also remove the cache here to avoid a large cache after a long run.
          return NO_ERROR;
      }
@@ -97,10 +115,10 @@ index ea4258c878..4d4e8a8717 100644
  #if MAJOR_VERSION == 7 && MINOR_VERSION == 1
      if (supportsSetConnectedState7_1) {
          AudioPort hidlPort;
-@@ -609,11 +610,17 @@ status_t DeviceHalHidl::setConnectedState(const struct audio_port_v7 *port, bool
-         return result;
+@@ -629,11 +635,17 @@ status_t DeviceHalHidl::setConnectedState(const struct audio_port_v7 *port, bool
+         return NO_ERROR;
      }
-     return processReturn("setConnectedState", mDevice->setConnectedState(hidlAddress, connected));
+     return processReturn("setConnectedState", ret);
 +#else
 +    (void) port;
 +    (void) connected;
@@ -115,7 +133,7 @@ index ea4258c878..4d4e8a8717 100644
      audio_hw_sync_t value;
      Result result;
      Return<void> ret = mDevice->getHwAvSync([&value, &result](Result r, audio_hw_sync_t v) {
-@@ -622,6 +629,9 @@ error::Result<audio_hw_sync_t> DeviceHalHidl::getHwAvSync() {
+@@ -642,6 +654,9 @@ error::Result<audio_hw_sync_t> DeviceHalHidl::getHwAvSync() {
      });
      RETURN_IF_ERROR(processReturn("getHwAvSync", ret, result));
      return value;
@@ -148,5 +166,5 @@ index 1cac9dab76..78c0c56416 100644
              ret = factory->openDevice_7_1(
  #else
 -- 
-2.34.1
+2.43.0
 

@@ -1,21 +1,37 @@
-From 81a649a999ddd0eadd2595620b5b9dc17d72778e Mon Sep 17 00:00:00 2001
+From efbcbd9a3fdbd7104ef0192372b883eace4df0bc Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Fri, 6 Oct 2023 05:18:39 -0400
-Subject: [PATCH] Include vndk v28 apex
+Date: Tue, 11 Aug 2026 09:24:28 +0000
+Subject: [PATCH] Include vndk v28 and v29 apex
+
+On Android 16, upstream packages/modules/vndk only ships apex_vndk
+modules for v31-v34. TrebleDroid device/phh/treble sets
+PRODUCT_EXTRA_VNDK_VERSIONS += 28 29 (base.mk / old-vndk.mk), which
+requires com.android.vndk.v28 and com.android.vndk.v29 modules.
+prebuilts/vndk/v28 and v29 snapshots are present in A16, so define
+both apex modules (original lineage-21-td patch added only v28, as
+v29 was still upstream on A14).
 
 Change-Id: I5689074542f13e136e5bc1292afec2a8288f9e1c
 ---
- apex/Android.bp | 6 ++++++
- 1 file changed, 6 insertions(+)
+ apex/Android.bp | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/apex/Android.bp b/apex/Android.bp
-index 3e20230..4ccf12f 100644
+index baf8d19..b56c5d0 100644
 --- a/apex/Android.bp
 +++ b/apex/Android.bp
-@@ -89,3 +89,9 @@ apex_vndk {
+@@ -63,3 +63,17 @@ apex_vndk {
+     vndk_version: "31",
      system_ext_specific: true,
  }
- 
++
++apex_vndk {
++    name: "com.android.vndk.v29",
++    defaults: ["vndk-apex-defaults"],
++    vndk_version: "29",
++    system_ext_specific: true,
++}
++
 +apex_vndk {
 +    name: "com.android.vndk.v28",
 +    defaults: ["vndk-apex-defaults"],
@@ -23,5 +39,5 @@ index 3e20230..4ccf12f 100644
 +    system_ext_specific: true,
 +}
 -- 
-2.25.1
+2.43.0
 

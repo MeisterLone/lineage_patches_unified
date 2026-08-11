@@ -1,40 +1,33 @@
-From a461184ae8c96495bb9e85152d2884c2637b3e97 Mon Sep 17 00:00:00 2001
-From: Danny Baumann <dannybaumann@web.de>
-Date: Wed, 20 Jul 2022 15:53:13 +0200
-Subject: [PATCH 35/45] SystemUI: Fix QS header clock color
+From a19f1d9f2d8a9070cd9ea3ed29c4f4fdf50309af Mon Sep 17 00:00:00 2001
+From: Danny Lin <danny@kdrag0n.dev>
+Date: Tue, 11 Aug 2026 09:50:32 +0000
+Subject: [PATCH] SystemUI: Fix QS header clock color
 
-Now that we're flipping QS colors by theme (dark/light), we can no longer
-rely on wallpaper colors for QS clock. Instead, we now can rely on clock color
-being updated correctly on QS re-inflation (via
-QuickStatusBarHeader.updateResources).
+[Port to A16] onColorsChanged(boolean) still present but uncalled in A16 (header uses setTextAppearance); removed method + now-unused imports.
 
-Change-Id: Icdf2484793cb63b7c0ab6ab87e94185e6bdc9ca4
-Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Change-Id: Ie4d3a5597fed55e0d35a40b0282812c089a60872
 ---
  .../src/com/android/systemui/statusbar/policy/Clock.java | 9 ---------
  1 file changed, 9 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
-index cc7a82d49fab..94f65f2a9833 100644
+index 97c71b2c319b..8cabd9b17376 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
-@@ -43,7 +43,6 @@ import android.text.style.CharacterStyle;
+@@ -41,12 +41,10 @@ import android.text.format.DateFormat;
+ import android.text.style.CharacterStyle;
  import android.text.style.RelativeSizeSpan;
  import android.util.AttributeSet;
- import android.util.TypedValue;
 -import android.view.ContextThemeWrapper;
  import android.view.Display;
  import android.view.View;
- import android.view.ViewGroup;
-@@ -51,7 +50,6 @@ import android.widget.TextView;
- 
- import androidx.annotation.Nullable;
+ import android.widget.TextView;
  
 -import com.android.settingslib.Utils;
+ import com.android.settingslib.applications.InterestingConfigChanges;
  import com.android.systemui.Dependency;
  import com.android.systemui.FontSizeUtils;
- import com.android.systemui.res.R;
-@@ -433,13 +431,6 @@ public class Clock extends TextView implements
+@@ -395,13 +393,6 @@ public class Clock extends TextView implements
          setTextColor(mNonAdaptedColor);
      }
  
@@ -45,9 +38,9 @@ index cc7a82d49fab..94f65f2a9833 100644
 -        setTextColor(Utils.getColorAttrDefaultColor(context, R.attr.wallpaperTextColor));
 -    }
 -
-     @Override
      public void onDensityOrFontScaleChanged() {
-         reloadDimens();
+         ShadeWindowGoesAround.assertInLegacyMode();
+         // Note that this class is not being registered as configuration listener when used
 -- 
-2.34.1
+2.43.0
 

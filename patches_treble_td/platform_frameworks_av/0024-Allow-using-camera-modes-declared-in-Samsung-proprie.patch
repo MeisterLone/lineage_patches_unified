@@ -1,23 +1,24 @@
-From 68bee34347886f4cc278ec00729d0105a08defc6 Mon Sep 17 00:00:00 2001
+From ae39c07da86247ed4a0c4acbf7ea4a51845ca73a Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sat, 10 Feb 2024 09:30:19 -0500
+Date: Tue, 11 Aug 2026 09:06:17 +0000
 Subject: [PATCH 24/24] Allow using camera modes declared in Samsung
  proprietary values
 
 ---
- .../utils/SessionConfigurationUtils.cpp       | 79 +++++++++++++------
- 1 file changed, 53 insertions(+), 26 deletions(-)
+ .../utils/SessionConfigurationUtils.cpp       | 80 ++++++++++++-------
+ 1 file changed, 53 insertions(+), 27 deletions(-)
 
 diff --git a/services/camera/libcameraservice/utils/SessionConfigurationUtils.cpp b/services/camera/libcameraservice/utils/SessionConfigurationUtils.cpp
-index b4adf3e5b4..d4d9c433a1 100644
+index 6ef037a71d..50069ea550 100644
 --- a/services/camera/libcameraservice/utils/SessionConfigurationUtils.cpp
 +++ b/services/camera/libcameraservice/utils/SessionConfigurationUtils.cpp
-@@ -168,35 +168,62 @@ bool roundBufferDimensionNearest(int32_t width, int32_t height,
- 
-     bool isJpegRDataSpace = (dataSpace == static_cast<android_dataspace_t>(
+@@ -178,36 +178,62 @@ bool roundBufferDimensionNearest(int32_t width, int32_t height,
                  ::aidl::android::hardware::graphics::common::Dataspace::JPEG_R));
+     bool isHeicUltraHDRDataSpace = (dataSpace == static_cast<android_dataspace_t>(
+                 ::aidl::android::hardware::graphics::common::Dataspace::HEIF_ULTRAHDR));
 -    camera_metadata_ro_entry streamConfigs =
 -            (isJpegRDataSpace) ? info.find(jpegRSizesTag) :
+-            (isHeicUltraHDRDataSpace) ? info.find(heicUltraHDRSizesTag) :
 -            (dataSpace == HAL_DATASPACE_DEPTH) ? info.find(depthSizesTag) :
 -            (dataSpace == static_cast<android_dataspace>(HAL_DATASPACE_HEIF)) ?
 -            info.find(heicSizesTag) :
@@ -25,6 +26,7 @@ index b4adf3e5b4..d4d9c433a1 100644
 +    bool isDepth = dataSpace == HAL_DATASPACE_DEPTH;
 +    bool isHeif = dataSpace == static_cast<android_dataspace>(HAL_DATASPACE_HEIF);
 +    int32_t selectedTag = isJpegRDataSpace ? jpegRSizesTag :
++        isHeicUltraHDRDataSpace ? heicUltraHDRSizesTag :
 +        isDepth ? depthSizesTag :
 +        isHeif ? heicSizesTag : scalerSizesTag;
 +
@@ -77,7 +79,6 @@ index b4adf3e5b4..d4d9c433a1 100644
 +        camera_metadata_ro_entry streamConfigs =
 +            info.find(tag);
 +
-+
 +        // Iterate through listed stream configurations and find the one with the smallest euclidean
 +        // distance from the given dimensions for the given format.
 +        for (size_t i = 0; i < streamConfigs.count; i += 4) {
@@ -102,5 +103,5 @@ index b4adf3e5b4..d4d9c433a1 100644
          }
      }
 -- 
-2.34.1
+2.43.0
 

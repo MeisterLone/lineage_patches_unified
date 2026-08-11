@@ -1,33 +1,39 @@
-From 83c817d4704fa9537662a9d631b48c2202f8eeb2 Mon Sep 17 00:00:00 2001
+From 4837738df5fdb78273897c0b3689c24052349d5f Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sun, 21 Jan 2024 22:03:47 +0800
-Subject: [PATCH 04/45] Keyguard: Allow locking to any rotation mode
+Date: Tue, 11 Aug 2026 09:16:21 +0000
+Subject: [PATCH] Keyguard: Allow locking to any rotation mode
 
 Change-Id: I0f12c433f3547e9bfcdbc2cf50e2a4f3ec8ca311
+
+[Port to A16] A16 added dream/glanceableHub SENSOR branch; kept it, folded shouldEnableKeyguardScreenRotation into the first condition and dropped the NOSENSOR branch per original intent.
+
+Change-Id: I336ec76bc9d00799e1b27b2664617a597d290a5c
 ---
- .../shade/NotificationShadeWindowControllerImpl.java     | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ .../shade/NotificationShadeWindowControllerImpl.java  | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/shade/NotificationShadeWindowControllerImpl.java b/packages/SystemUI/src/com/android/systemui/shade/NotificationShadeWindowControllerImpl.java
-index 1aa42d1554fe..a2787a0bebe0 100644
+index 2809fb76ff48..1c0da3ba038b 100644
 --- a/packages/SystemUI/src/com/android/systemui/shade/NotificationShadeWindowControllerImpl.java
 +++ b/packages/SystemUI/src/com/android/systemui/shade/NotificationShadeWindowControllerImpl.java
-@@ -443,12 +443,9 @@ public class NotificationShadeWindowControllerImpl implements NotificationShadeW
-     }
- 
-     private void adjustScreenOrientation(NotificationShadeWindowState state) {
--        if (state.bouncerShowing || state.isKeyguardShowingAndNotOccluded() || state.dozing) {
+@@ -489,13 +489,10 @@ public class NotificationShadeWindowControllerImpl implements NotificationShadeW
+         boolean dreamShowingAndRotationAllowed = dreamsV2() && mContext.getResources().getBoolean(
+                 com.android.internal.R.bool.config_alwaysAllowDreamRotation)
+                 && state.isOnOrGoingToDream;
+-        if (state.bouncerShowing || (state.isKeyguardShowingAndNotOccluded()
+-                && !dreamShowingAndRotationAllowed) || state.dozing) {
 -            if (shouldEnableKeyguardScreenRotation()) {
 -                mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
 -            } else {
 -                mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
 -            }
-+        if ((state.bouncerShowing || state.isKeyguardShowingAndNotOccluded() || state.dozing)
++        if ((state.bouncerShowing || (state.isKeyguardShowingAndNotOccluded()
++                && !dreamShowingAndRotationAllowed) || state.dozing)
 +                && shouldEnableKeyguardScreenRotation()) {
 +            mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_USER;
+         } else if (state.glanceableHubOrientationAware || dreamShowingAndRotationAllowed) {
+             mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
          } else {
-             mLpChanged.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-         }
 -- 
-2.34.1
+2.43.0
 

@@ -1,9 +1,11 @@
-From 240e06c899c59d96de4764219c7f0e23b0d077c3 Mon Sep 17 00:00:00 2001
-From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Fri, 10 May 2024 01:25:37 +0800
-Subject: [PATCH 1/5] Add MotoHelloUINavbarOverlay (2/2)
+From 73c8c3ac323a4debc4fd9fec1c5b2dcd710ab551 Mon Sep 17 00:00:00 2001
+From: port-worker <port-worker@localhost>
+Date: Tue, 11 Aug 2026 08:47:38 +0000
+Subject: [PATCH] Add MotoHelloUINavbarOverlay (2/2)
 
 Redrawn after extracted SVGs, resized and adjusted stroke width
+
+[ported to A16: TrebuchetOverlay renamed to Launcher3Overlay; both target com.android.launcher3]
 
 Change-Id: Ifba5adfd10b3eee31e97baa52ce897db31f019d9
 ---
@@ -11,15 +13,15 @@ Change-Id: Ifba5adfd10b3eee31e97baa52ce897db31f019d9
  .../res/drawable/ic_sysbar_home.xml           | 11 +++++++++++
  .../res/drawable/ic_sysbar_recent.xml         | 19 +++++++++++++++++++
  3 files changed, 42 insertions(+)
- create mode 100644 overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_back.xml
- create mode 100644 overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_home.xml
- create mode 100644 overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_recent.xml
+ create mode 100644 overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_back.xml
+ create mode 100644 overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_home.xml
+ create mode 100644 overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_recent.xml
 
-diff --git a/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_back.xml b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_back.xml
+diff --git a/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_back.xml b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_back.xml
 new file mode 100644
 index 00000000..2fe4ba43
 --- /dev/null
-+++ b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_back.xml
++++ b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_back.xml
 @@ -0,0 +1,12 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -33,11 +35,11 @@ index 00000000..2fe4ba43
 +        android:strokeColor="#FFFFFFFF"
 +        android:strokeWidth="1.75" />
 +</vector>
-diff --git a/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_home.xml b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_home.xml
+diff --git a/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_home.xml b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_home.xml
 new file mode 100644
 index 00000000..14110ab5
 --- /dev/null
-+++ b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_home.xml
++++ b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_home.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -50,11 +52,11 @@ index 00000000..14110ab5
 +        android:strokeColor="#FFFFFFFF"
 +        android:strokeWidth="1.75" />
 +</vector>
-diff --git a/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_recent.xml b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_recent.xml
+diff --git a/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_recent.xml b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_recent.xml
 new file mode 100644
 index 00000000..7436752d
 --- /dev/null
-+++ b/overlay/rro_packages/TrebuchetOverlay/res/drawable/ic_sysbar_recent.xml
++++ b/overlay/rro_packages/Launcher3Overlay/res/drawable/ic_sysbar_recent.xml
 @@ -0,0 +1,19 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -76,5 +78,5 @@ index 00000000..7436752d
 +        android:strokeWidth="1.53" />
 +</vector>
 -- 
-2.34.1
+2.43.0
 

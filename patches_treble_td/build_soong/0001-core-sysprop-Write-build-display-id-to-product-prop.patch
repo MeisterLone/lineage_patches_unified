@@ -1,0 +1,43 @@
+From be48fab7ec6fc5e4e6d4f45f1ce88888a8c03b7e Mon Sep 17 00:00:00 2001
+From: Adithya R <gh0strider.2k18.reborn@gmail.com>
+Date: Tue, 11 Aug 2026 09:09:45 +0000
+Subject: [PATCH] core: sysprop: Write build display id to product prop
+
+Some vendors override build id in odm or vendor, such as oplus.
+
+[ported to A16: build.prop generation moved from build/make core/sysprop.mk
+to build/soong scripts/gen_build_prop.py; emit a forced ro.build.display.id
+for the product partition in generate_build_info]
+
+Change-Id: I1c2de43ba7c3544710897ad9127d320dd02293fe
+---
+ scripts/gen_build_prop.py | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/gen_build_prop.py b/scripts/gen_build_prop.py
+index 04ec41070..bdd742469 100644
+--- a/scripts/gen_build_prop.py
++++ b/scripts/gen_build_prop.py
+@@ -209,7 +209,18 @@ def generate_build_info(args):
+   print(f"ro.build.id?={config['BuildId']}")
+ 
+   # ro.build.display.id is shown under Settings -> About Phone
+-  if config["BuildVariant"] != "eng":
++  if args.partition == "product":
++    # Some vendors override build id in odm or vendor, such as oplus.
++    # Keep a forced copy of the true build display id in the product
++    # partition prop so that a forced vendor/odm override cannot win.
++    if config["BuildVariant"] != "eng":
++      if config["DisplayBuildNumber"]:
++        print(f"ro.build.display.id={config['BuildId']}.{config['BuildNumber']} {config['BuildKeys']}")
++      else:
++        print(f"ro.build.display.id={config['BuildId']} {config['BuildKeys']}")
++    else:
++      print(f"ro.build.display.id={config['LineageDesc']}")
++  elif config["BuildVariant"] != "eng":
+     # User builds should show:
+     # release build number or branch.buld_number non-release builds
+ 
+-- 
+2.43.0
+

@@ -1,19 +1,23 @@
-From 83fc09d801e31646f3c1ad2be40ca08286d6ff78 Mon Sep 17 00:00:00 2001
+From 913fe34dc6ea8d71cbdba1e8adf632bc122602ea Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Wed, 18 Oct 2023 16:53:40 -0400
-Subject: [PATCH 38/51] Ignore cgroup creation errors
+Date: Tue, 11 Aug 2026 09:06:55 +0000
+Subject: [PATCH] Ignore cgroup creation errors
 
 For old kernels who don't have those modern cgroups
+
+[Port to A16] Both target sites unchanged upstream; applied verbatim.
+
+Change-Id: Ia1c5f61d30fa41978a7ab497a8f26aa8206b02c9
 ---
  core/jni/com_android_internal_os_Zygote.cpp               | 2 ++
  services/core/java/com/android/server/am/ProcessList.java | 5 -----
  2 files changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/core/jni/com_android_internal_os_Zygote.cpp b/core/jni/com_android_internal_os_Zygote.cpp
-index 3ed9f49ede26..90c6e6d145c0 100644
+index a92c6c8718ee..a5ecd9fa97a1 100644
 --- a/core/jni/com_android_internal_os_Zygote.cpp
 +++ b/core/jni/com_android_internal_os_Zygote.cpp
-@@ -1968,10 +1968,12 @@ static void SpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArray gids,
+@@ -1969,10 +1969,12 @@ static void SpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArray gids,
      if (getuid() == 0) {
          const int rc = createProcessGroup(uid, getpid());
          if (rc != 0) {
@@ -24,13 +28,13 @@ index 3ed9f49ede26..90c6e6d145c0 100644
                                                  /* pid= */ 0, strerror(-rc)));
 +#endif
          }
-     }
  
+         if (is_system_server && UsePerAppMemcg()) {
 diff --git a/services/core/java/com/android/server/am/ProcessList.java b/services/core/java/com/android/server/am/ProcessList.java
-index 89c89944e92e..641b2cc824e0 100644
+index a421ee65fcfd..a774a37f0905 100644
 --- a/services/core/java/com/android/server/am/ProcessList.java
 +++ b/services/core/java/com/android/server/am/ProcessList.java
-@@ -2513,14 +2513,9 @@ public final class ProcessList {
+@@ -2617,14 +2617,9 @@ public final class ProcessList implements ProcessStateController.ProcessLruUpdat
                          // If we're not told to skip the process group creation, go create it.
                          final int res = Process.createProcessGroup(uid, startResult.pid);
                          if (res < 0) {
@@ -46,5 +50,5 @@ index 89c89944e92e..641b2cc824e0 100644
                              app.mProcessGroupCreated = true;
                          }
 -- 
-2.34.1
+2.43.0
 

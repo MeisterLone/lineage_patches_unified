@@ -1,30 +1,43 @@
-From e038d7a3060fc448dee8060018011bda20debd6a Mon Sep 17 00:00:00 2001
-From: AndyCGYan <GeForce8800Ultra@gmail.com>
-Date: Sun, 3 Mar 2019 14:07:33 +0800
+From 751a9e0d1e61e7a431fe19001d65d17c7826e718 Mon Sep 17 00:00:00 2001
+From: port-worker <port-worker@localhost>
+Date: Tue, 11 Aug 2026 08:50:40 +0000
 Subject: [PATCH] build_soong: Disable generated_kernel_headers
 
-...but done in a way so that there's no need to remove generated_kernel_headers from individual projects - thanks @ExpressLuke
+...but done in a way so that there is no need to remove generated_kernel_headers from individual projects - thanks @ExpressLuke
+
+[ported to A16: cmd is now bazel-aware multi-line; removed cmd + dep_root/dep_files
+from the generated_kernel_includes lineage_generator, keeping export_include_dirs.]
 
 Change-Id: I630857cec208f1830e776bf5031d7bb9bc4435d0
 ---
- build/soong/Android.bp | 12 ------------
- 1 file changed, 12 deletions(-)
+ build/soong/Android.bp | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
 diff --git a/build/soong/Android.bp b/build/soong/Android.bp
-index af0511b0..466362c8 100644
+index 295a6af8..8295f3ea 100644
 --- a/build/soong/Android.bp
 +++ b/build/soong/Android.bp
-@@ -20,9 +20,6 @@ bootstrap_go_package {
+@@ -21,19 +21,6 @@ bootstrap_go_package {
  lineage_generator {
      name: "generated_kernel_includes",
  
 -    // The headers make command
--    cmd: "$(PATH_OVERRIDE_SOONG) $(KERNEL_MAKE_CMD) $(KERNEL_MAKE_FLAGS) -C $(TARGET_KERNEL_SOURCE) O=$(KERNEL_BUILD_OUT_PREFIX)$(genDir) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) headers_install && vendor/lineage/tools/clean_headers.sh $(KERNEL_BUILD_OUT_PREFIX)$(genDir)",
+-    cmd: "set -e; " +
+-         "if [ -n \"$(TARGET_KERNEL_PLATFORM_TARGET)\" ]; then " +
+-         "    pushd $(KERNEL_PATH); " +
+-         "    ./tools/bazel --output_user_root=$(KERNEL_BUILD_OUT_PREFIX)$(genDir)/bazel-out --output_root=$(KERNEL_BUILD_OUT_PREFIX)$(genDir)/bazel-out run --experimental_convenience_symlinks=ignore --cpu=$(KERNEL_ARCH) //$(TARGET_KERNEL_SOURCE):$(TARGET_KERNEL_PLATFORM_TARGET)_uapi_headers_dist -- --destdir=$(KERNEL_BUILD_OUT_PREFIX)$(genDir); " +
+-         "    popd; " +
+-         "    gzip -d $(KERNEL_BUILD_OUT_PREFIX)$(genDir)/kernel-uapi-headers.tar.gz; " +
+-         "    tar -xf $(KERNEL_BUILD_OUT_PREFIX)$(genDir)/kernel-uapi-headers.tar -C $(KERNEL_BUILD_OUT_PREFIX)$(genDir); " +
+-         "else " +
+-         "    $(PATH_OVERRIDE_SOONG) $(KERNEL_MAKE_CMD) $(KERNEL_MAKE_FLAGS) -C $(TARGET_KERNEL_SOURCE) O=$(KERNEL_BUILD_OUT_PREFIX)$(genDir) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) headers_install; " +
+-         "fi; " +
+-         "vendor/lineage/tools/clean_headers.sh $(KERNEL_BUILD_OUT_PREFIX)$(genDir)",
 -
      // Directories that can be imported by a cc_* module generated_headers property
      export_include_dirs: [
          "usr/audio/include/uapi",
-@@ -31,15 +28,6 @@ lineage_generator {
+@@ -42,15 +29,6 @@ lineage_generator {
          "usr/include/audio/include/uapi",
          "usr/techpack/audio/include",
      ],
@@ -39,7 +52,7 @@ index af0511b0..466362c8 100644
 -    ],
  }
  
- cc_defaults {
+ lineage_generator {
 -- 
-2.34.1
+2.43.0
 

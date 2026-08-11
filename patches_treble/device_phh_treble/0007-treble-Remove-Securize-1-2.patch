@@ -1,29 +1,29 @@
-From 0e6f61d7987a5c3295aabad96b28efe87a1a1a0a Mon Sep 17 00:00:00 2001
+From 0deb4b68dbba16337b48e031ba8673de73c55a80 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Mon, 15 Jul 2024 22:30:54 +0800
-Subject: [PATCH 7/8] treble: Remove Securize (1/2)
+Date: Tue, 11 Aug 2026 08:50:57 +0000
+Subject: [PATCH] treble: Remove Securize (1/2)
 
 Leave this Play Integrity mess to the professionals
 
 Change-Id: Ic4ef0512d8b555b85e7497464a07913101fcc819
 ---
  base.mk         |  1 -
- files/ota.sh    |  3 ---
- phh-securize.sh | 38 -----------------------------
- rw-system.sh    | 63 ++++++-------------------------------------------
- 4 files changed, 7 insertions(+), 98 deletions(-)
+ files/ota.sh    |  3 --
+ phh-securize.sh | 38 -------------------------
+ rw-system.sh    | 74 +++++--------------------------------------------
+ 4 files changed, 7 insertions(+), 109 deletions(-)
  delete mode 100644 phh-securize.sh
 
 diff --git a/base.mk b/base.mk
-index 1c2fe3d..dea8d2d 100644
+index 98c531c..d6f7ad2 100644
 --- a/base.mk
 +++ b/base.mk
-@@ -178,7 +178,6 @@ PRODUCT_PACKAGES += \
- 	resetprop_phh
+@@ -170,7 +170,6 @@ PRODUCT_PACKAGES += \
+     resetprop_phh
  
  PRODUCT_COPY_FILES += \
--	device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
- 	device/phh/treble/files/ota.sh:system/bin/ota.sh \
+-    device/phh/treble/phh-securize.sh:system/bin/phh-securize.sh \
+     device/phh/treble/files/ota.sh:system/bin/ota.sh \
  
  PRODUCT_COPY_FILES += \
 diff --git a/files/ota.sh b/files/ota.sh
@@ -85,10 +85,10 @@ index 80b46d7..0000000
 -touch /metadata/phh/secure
 -reboot
 diff --git a/rw-system.sh b/rw-system.sh
-index 9a1eea5..9446a7d 100644
+index a0ca472..1fac574 100644
 --- a/rw-system.sh
 +++ b/rw-system.sh
-@@ -779,65 +779,16 @@ copyprop() {
+@@ -800,75 +800,15 @@ copyprop() {
          resetprop_phh "$1" "$(getprop "$2")"
      fi
  }
@@ -121,8 +121,14 @@ index 9a1eea5..9446a7d 100644
 -    (getprop ro.vendor.build.security_patch; getprop ro.keymaster.xxx.security_patch) |sort |tail -n 1 |while read v;do
 -        [ -n "$v" ] && resetprop_phh ro.build.version.security_patch "$v"
 -    done
- 
+-
+-    resetprop_phh ro.build.user nobody
+-    resetprop_phh ro.build.host android-build
 -    resetprop_phh ro.build.tags release-keys
+-    resetprop_phh ro.product.build.tags release-keys
+-    resetprop_phh ro.system.build.tags release-keys
+-    resetprop_phh ro.system_ext.build.tags release-keys
+-    resetprop_phh ro.vendor.build.tags release-keys
 -    resetprop_phh ro.boot.vbmeta.device_state locked
 -    resetprop_phh ro.boot.verifiedbootstate green
 -    resetprop_phh ro.boot.flash.locked 1
@@ -132,6 +138,10 @@ index 9a1eea5..9446a7d 100644
 -    resetprop_phh ro.debuggable 0
 -    resetprop_phh ro.secure 1
 -    resetprop_phh ro.build.type user
+-    resetprop_phh ro.product.build.type user
+-    resetprop_phh ro.system.build.type user
+-    resetprop_phh ro.system_ext.build.type user
+-    resetprop_phh ro.vendor.build.type user
 -    resetprop_phh --delete ro.build.selinux
 -
 -    resetprop_phh ro.adb.secure 1
@@ -139,7 +149,7 @@ index 9a1eea5..9446a7d 100644
 -    # Hide system/xbin/su
 -    mount /mnt/phh/empty_dir /system/xbin
 -    mount /mnt/phh/empty_dir /system/app/me.phh.superuser
--    mount /system/phh/empty /system/xbin/phh-su
+-    mount /mnt/phh/empty /system/xbin/phh-su
 -else
 -    mkdir /mnt/phh/xbin
 -    chmod 0755 /mnt/phh/xbin
@@ -162,5 +172,5 @@ index 9a1eea5..9446a7d 100644
  for abi in "" 64;do
      f=/vendor/lib$abi/libstagefright_foundation.so
 -- 
-2.34.1
+2.43.0
 

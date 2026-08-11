@@ -1,19 +1,23 @@
-From 229f40cdfbc7f1721b742571c484ebf3ad75a4ad Mon Sep 17 00:00:00 2001
+From 89eb730a6e2a444b51e36dc7afc397ce483343fb Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
-Date: Sun, 17 Mar 2024 17:10:38 +0800
-Subject: [PATCH 15/45] Remove debuggable requirement for signature spoofing
+Date: Tue, 11 Aug 2026 09:24:22 +0000
+Subject: [PATCH] Remove debuggable requirement for signature spoofing
 
 Change-Id: I8d637ddbbd117a9c5b1d9c5e462b0f4b30d98333
+
+[Port to A16] LOS23 still ships isMicrogSigned; removed the isDebuggable() gate (context: native isDebuggable now public).
+
+Change-Id: I6f501828978c8020e4a8dcaeb8093d86177383df
 ---
  services/core/java/com/android/server/pm/ComputerEngine.java | 4 ----
  1 file changed, 4 deletions(-)
 
 diff --git a/services/core/java/com/android/server/pm/ComputerEngine.java b/services/core/java/com/android/server/pm/ComputerEngine.java
-index 7d00436857a5..10a221eb8b9f 100644
+index 3300f3481792..726d6bb417ca 100644
 --- a/services/core/java/com/android/server/pm/ComputerEngine.java
 +++ b/services/core/java/com/android/server/pm/ComputerEngine.java
-@@ -1474,10 +1474,6 @@ public class ComputerEngine implements Computer {
-     private static native boolean isDebuggable();
+@@ -1486,10 +1486,6 @@ public class ComputerEngine implements Computer {
+     public static native boolean isDebuggable();
  
      public static boolean isMicrogSigned(AndroidPackage p) {
 -        if (!isDebuggable()) {
@@ -24,5 +28,5 @@ index 7d00436857a5..10a221eb8b9f 100644
          // * com.android.vending - microG Companion
          // * com.google.android.gms - microG Services
 -- 
-2.34.1
+2.43.0
 

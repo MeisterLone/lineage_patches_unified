@@ -1,4 +1,4 @@
-From 3dda22bc6cad9da7d937218f157fe762dafb5d7d Mon Sep 17 00:00:00 2001
+From f2ee761f4477d3a2195bd8aa52f5b26dd123d999 Mon Sep 17 00:00:00 2001
 From: AndyCGYan <GeForce8800Ultra@gmail.com>
 Date: Sun, 13 Jan 2019 21:44:48 +0800
 Subject: [PATCH] LineageParts: Invert per-app stretch-to-fullscreen
@@ -14,7 +14,7 @@ Change-Id: Icb02c8dfd84882f736e37d6cd92c35e5eb288faa
  6 files changed, 11 insertions(+), 11 deletions(-)
 
 diff --git a/res/layout/long_screen_layout.xml b/res/layout/long_screen_layout.xml
-index 3252c10..ed4efd9 100644
+index c42a75e..65c901a 100644
 --- a/res/layout/long_screen_layout.xml
 +++ b/res/layout/long_screen_layout.xml
 @@ -25,7 +25,7 @@
@@ -27,10 +27,10 @@ index 3252c10..ed4efd9 100644
          android:visibility="gone" />
  
 diff --git a/res/values-zh-rCN/strings.xml b/res/values-zh-rCN/strings.xml
-index 9823209..a15a439 100644
+index 27a2f0c..c81939d 100644
 --- a/res/values-zh-rCN/strings.xml
 +++ b/res/values-zh-rCN/strings.xml
-@@ -456,9 +456,9 @@
+@@ -452,9 +452,9 @@
      <string name="display_rotation_90_title">90 度</string>
      <string name="display_rotation_180_title">180 度</string>
      <string name="display_rotation_270_title">270 度</string>
@@ -44,10 +44,10 @@ index 9823209..a15a439 100644
      <string name="charging_sounds_enable_title">启用充电提示音</string>
      <string name="charging_sounds_summary">连接或断开电源时发出声音</string>
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index 0358a7e..5996a8f 100644
+index 9a0010f..ae8fc60 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
-@@ -579,9 +579,9 @@
+@@ -586,9 +586,9 @@
      <string name="display_rotation_270_title">270 degrees</string>
  
      <!-- Applications: Long screen -->
@@ -61,7 +61,7 @@ index 0358a7e..5996a8f 100644
      <!-- Sounds: Charging sounds -->
      <string name="charging_sounds_settings_title">Charging sounds</string>
 diff --git a/res/xml/long_screen_prefs.xml b/res/xml/long_screen_prefs.xml
-index 9a4f7bb..ece52c9 100644
+index 0f0be50..2bd5b42 100644
 --- a/res/xml/long_screen_prefs.xml
 +++ b/res/xml/long_screen_prefs.xml
 @@ -6,6 +6,6 @@
@@ -73,7 +73,7 @@ index 9a4f7bb..ece52c9 100644
  
  </PreferenceScreen>
 diff --git a/res/xml/parts_catalog.xml b/res/xml/parts_catalog.xml
-index d6b19c0..6e65a31 100644
+index 8906d2f..d5618db 100644
 --- a/res/xml/parts_catalog.xml
 +++ b/res/xml/parts_catalog.xml
 @@ -75,8 +75,8 @@
@@ -88,10 +88,10 @@ index d6b19c0..6e65a31 100644
            lineage:xmlRes="@xml/long_screen_prefs" />
  
 diff --git a/src/org/lineageos/lineageparts/applications/LongScreenSettings.java b/src/org/lineageos/lineageparts/applications/LongScreenSettings.java
-index 7155e12..4b89260 100644
+index ca9ae63..896bc8a 100644
 --- a/src/org/lineageos/lineageparts/applications/LongScreenSettings.java
 +++ b/src/org/lineageos/lineageparts/applications/LongScreenSettings.java
-@@ -222,7 +222,7 @@ public class LongScreenSettings extends SettingsPreferenceFragment
+@@ -223,7 +223,7 @@ public class LongScreenSettings extends SettingsPreferenceFragment
              mApplicationsState.ensureIcon(entry);
              holder.icon.setImageDrawable(entry.icon);
              holder.state.setTag(entry);
@@ -101,5 +101,5 @@ index 7155e12..4b89260 100644
          }
  
 -- 
-2.34.1
+2.43.0
 

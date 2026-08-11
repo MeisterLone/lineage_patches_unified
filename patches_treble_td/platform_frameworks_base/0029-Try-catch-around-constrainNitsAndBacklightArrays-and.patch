@@ -1,34 +1,31 @@
-From d5421f90ac947e0f130c0f9f0541dc5a435bd8b0 Mon Sep 17 00:00:00 2001
+From d4958e97cbf43c5d1e6c16d33c8212b1500c5bc1 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Fri, 2 Jun 2023 19:19:31 -0400
-Subject: [PATCH 29/51] Try catch around constrainNitsAndBacklightArrays, and
- falls back to dumb curve. It crashes on Xperia 1 IV.
+Date: Tue, 11 Aug 2026 09:01:51 +0000
+Subject: [PATCH] Try catch around constrainNitsAndBacklightArrays, and falls
+ back to dumb curve. It crashes on Xperia 1 IV.
 
+[Port to A16] Function body identical upstream; only trailing context moved (loadThermalThrottlingConfig follows loadBrightnessMap in A16).
+
+Change-Id: I909a2d6b17a97df4cbdcff5636f7f361399f5146
 ---
- .../server/display/DisplayDeviceConfig.java   | 56 ++++++++++---------
- 1 file changed, 31 insertions(+), 25 deletions(-)
+ .../server/display/DisplayDeviceConfig.java   | 61 +++++++++++--------
+ 1 file changed, 34 insertions(+), 27 deletions(-)
 
 diff --git a/services/core/java/com/android/server/display/DisplayDeviceConfig.java b/services/core/java/com/android/server/display/DisplayDeviceConfig.java
-index 04e06b99d3ee..663f78f78e50 100644
+index 454fb2f807c4..096b4777eb99 100644
 --- a/services/core/java/com/android/server/display/DisplayDeviceConfig.java
 +++ b/services/core/java/com/android/server/display/DisplayDeviceConfig.java
-@@ -2145,37 +2145,43 @@ public class DisplayDeviceConfig {
+@@ -2093,37 +2093,44 @@ public class DisplayDeviceConfig {
              return;
          }
  
 -        // Use the (preferred) display device config mapping
 -        final List<Point> points = map.getPoint();
 -        final int size = points.size();
-+        try {
-+            // Use the (preferred) display device config mapping
-+            final List<Point> points = map.getPoint();
-+            final int size = points.size();
- 
+-
 -        float[] nits = new float[size];
 -        float[] backlight = new float[size];
-+            float[] nits = new float[size];
-+            float[] backlight = new float[size];
- 
+-
 -        mInterpolationType = convertInterpolationType(map.getInterpolation());
 -        int i = 0;
 -        for (Point point : points) {
@@ -40,6 +37,14 @@ index 04e06b99d3ee..663f78f78e50 100644
 -                            + " of configuration. Nits: " + nits[i] + " < " + nits[i - 1]);
 -                    return;
 -                }
++        try {
++            // Use the (preferred) display device config mapping
++            final List<Point> points = map.getPoint();
++            final int size = points.size();
++
++            float[] nits = new float[size];
++            float[] backlight = new float[size];
++
 +            mInterpolationType = convertInterpolationType(map.getInterpolation());
 +            int i = 0;
 +            for (Point point : points) {
@@ -70,6 +75,7 @@ index 04e06b99d3ee..663f78f78e50 100644
 +            mRawNits = nits;
 +            mRawBacklight = backlight;
 +            constrainNitsAndBacklightArrays();
++
 +        } catch(Throwable t) {
 +            mRawNits = null;
 +            mRawBacklight = null;
@@ -80,7 +86,7 @@ index 04e06b99d3ee..663f78f78e50 100644
 -        constrainNitsAndBacklightArrays();
      }
  
-     private Spline loadSdrHdrRatioMap(HighBrightnessMode hbmConfig) {
+     private void loadThermalThrottlingConfig(DisplayConfiguration config) {
 -- 
-2.34.1
+2.43.0
 

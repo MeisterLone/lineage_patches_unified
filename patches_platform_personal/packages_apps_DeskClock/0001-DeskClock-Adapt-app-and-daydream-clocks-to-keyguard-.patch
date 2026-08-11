@@ -1,4 +1,4 @@
-From b82aab496e9b0aa66686f71e461c135a48046f61 Mon Sep 17 00:00:00 2001
+From 411237a2682275d9c23697c1eb8f8ef84e6736d0 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Wed, 19 Jan 2022 18:04:36 +0000
 Subject: [PATCH] DeskClock: Adapt app and daydream clocks to keyguard style
@@ -173,10 +173,10 @@ index c26f61dbd..c2e84eaa3 100644
 -        android:layout_gravity="start"/>
  </LinearLayout>
 diff --git a/res/values/dimens.xml b/res/values/dimens.xml
-index bf5128d1a..546cc02a8 100644
+index 6c2669d63..7fb78a4de 100644
 --- a/res/values/dimens.xml
 +++ b/res/values/dimens.xml
-@@ -60,7 +60,7 @@
+@@ -59,7 +59,7 @@
  
      <dimen name="body_font_padding">4dp</dimen>
  
@@ -185,7 +185,7 @@ index bf5128d1a..546cc02a8 100644
  
      <dimen name="no_alarms_size">90dp</dimen>
      <dimen name="fab_alarm_size">56dp</dimen>
-@@ -129,4 +129,14 @@
+@@ -128,4 +128,14 @@
      <dimen name="widget_background_corner_radius">80dp</dimen>
      <dimen name="widget_configuration_background_corner_radius">12dp</dimen>
      <dimen name="widget_padding">16dp</dimen>
@@ -214,10 +214,10 @@ index 1cbd61deb..918b5371e 100644
      <bool name="default_clock_night_mode_dnd">false</bool>
      <!-- Default screensaver night mode brightness. -->
 diff --git a/res/values/styles.xml b/res/values/styles.xml
-index 3cb625ba6..b46916317 100644
+index 33a71dda4..719f70601 100644
 --- a/res/values/styles.xml
 +++ b/res/values/styles.xml
-@@ -304,4 +304,22 @@
+@@ -310,4 +310,22 @@
          <item name="appWidgetThemeTransparent">@style/Theme.DeskClock.DigitalWidgetTransparentLightBg</item>
          <item name="appWidgetThemeSolid">@style/Theme.DeskClock.DigitalWidgetLightBg</item>
      </style>
@@ -281,7 +281,7 @@ index c3739bac8..5b931a46d 100644
          return (String) DateFormat.format(pattern, time);
      }
 diff --git a/src/com/android/deskclock/ClockFragment.java b/src/com/android/deskclock/ClockFragment.java
-index 7591a18d0..8b0eecf7e 100644
+index bb271b756..11607e865 100644
 --- a/src/com/android/deskclock/ClockFragment.java
 +++ b/src/com/android/deskclock/ClockFragment.java
 @@ -122,7 +122,6 @@ public final class ClockFragment extends DeskClockFragment {
@@ -300,7 +300,7 @@ index 7591a18d0..8b0eecf7e 100644
          }
  
          final View view = getView();
-@@ -492,7 +490,6 @@ public final class ClockFragment extends DeskClockFragment {
+@@ -487,7 +485,6 @@ public final class ClockFragment extends DeskClockFragment {
                  Utils.updateDate(dateFormat, dateFormatForAccessibility, itemView);
                  Utils.setClockStyle(mDigitalClock, mAnalogClock);
                  Utils.setClockSecondsEnabled(mDigitalClock, mAnalogClock);
@@ -398,5 +398,5 @@ index f55ede8e6..1fa303d6e 100644
  
      /**
 -- 
-2.34.1
+2.43.0
 

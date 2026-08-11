@@ -1,4 +1,4 @@
-From b1e1d47aa6510c69b45112dcc59c83d3297b14a1 Mon Sep 17 00:00:00 2001
+From 948f50e8bd64e7efdc7058cc37c4282800bf2eeb Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Thu, 23 Nov 2023 23:21:58 +0800
 Subject: [PATCH] SetupWizard: Least Action(s) Principle
@@ -11,7 +11,7 @@ Change-Id: I892634b8ffc7beafa5a223de0afdc64276efd2f5
  3 files changed, 3 insertions(+), 120 deletions(-)
 
 diff --git a/res/raw/lineage_wizard_script.xml b/res/raw/lineage_wizard_script.xml
-index af3df01..21cd2ef 100644
+index 26bf580..2a18bd9 100644
 --- a/res/raw/lineage_wizard_script.xml
 +++ b/res/raw/lineage_wizard_script.xml
 @@ -5,13 +5,7 @@
@@ -98,7 +98,7 @@ index af3df01..21cd2ef 100644
      </WizardAction>
  
 diff --git a/res/raw/lineage_wizard_script_managed_profile.xml b/res/raw/lineage_wizard_script_managed_profile.xml
-index 36f80c6..47e99c5 100644
+index ca149f5..726319d 100644
 --- a/res/raw/lineage_wizard_script_managed_profile.xml
 +++ b/res/raw/lineage_wizard_script_managed_profile.xml
 @@ -1,31 +1,11 @@
@@ -106,7 +106,7 @@ index 36f80c6..47e99c5 100644
  <!--
       SPDX-FileCopyrightText: 2016 The CyanogenMod Project
 -     SPDX-FileCopyrightText: 2021 The Calyx Institute
-      SPDX-FileCopyrightText: 2021-2024 The LineageOS Project
+      SPDX-FileCopyrightText: The LineageOS Project
       SPDX-License-Identifier: Apache-2.0
  -->
  <WizardScript xmlns:wizard="http://schemas.android.com/apk/res/com.google.android.setupwizard"
@@ -135,7 +135,7 @@ index 36f80c6..47e99c5 100644
      <WizardAction
          wizard:uri="intent:#Intent;action=org.lineageos.setupwizard.LINEAGE_SETUP_COMPLETE;end"
 diff --git a/res/raw/lineage_wizard_script_user.xml b/res/raw/lineage_wizard_script_user.xml
-index 1522eda..47e99c5 100644
+index fb3f298..726319d 100644
 --- a/res/raw/lineage_wizard_script_user.xml
 +++ b/res/raw/lineage_wizard_script_user.xml
 @@ -5,44 +5,7 @@
@@ -185,5 +185,5 @@ index 1522eda..47e99c5 100644
      <WizardAction
          wizard:uri="intent:#Intent;action=org.lineageos.setupwizard.LINEAGE_SETUP_COMPLETE;end"
 -- 
-2.34.1
+2.43.0
 

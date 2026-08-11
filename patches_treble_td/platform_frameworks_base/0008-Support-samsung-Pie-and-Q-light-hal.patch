@@ -1,19 +1,23 @@
-From 24816a5a9e825447d5f752c53dab6b5ec5567a5b Mon Sep 17 00:00:00 2001
+From 254b63df82c7505d54d2f99bbff6e799cf9b2087 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sun, 24 Mar 2019 23:05:14 +0100
-Subject: [PATCH 08/51] Support samsung Pie and Q light hal
+Date: Tue, 11 Aug 2026 08:52:30 +0000
+Subject: [PATCH] Support samsung Pie and Q light hal
 
 Change-Id: I01f94acd7d0672733e48854d80368f9ac6f861c6
+
+[Port to A16] Context-only: shared_libs list gained entries; anchor service.incremental unchanged.
+
+Change-Id: I2803d085858e4662142198d7e706fdcb94e0e286
 ---
  services/core/jni/Android.bp | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/services/core/jni/Android.bp b/services/core/jni/Android.bp
-index e078c6e34912..3fa42184d653 100644
+index 109abd5330be..50f568b229dd 100644
 --- a/services/core/jni/Android.bp
 +++ b/services/core/jni/Android.bp
-@@ -216,6 +216,8 @@ cc_defaults {
-         "android.system.suspend-V1-ndk",
+@@ -212,6 +212,8 @@ cc_defaults {
+         "android_location_flags_c_lib",
          "server_configurable_flags",
          "service.incremental",
 +        "vendor.samsung.hardware.light@2.0",
@@ -22,5 +26,5 @@ index e078c6e34912..3fa42184d653 100644
  
      static_libs: [
 -- 
-2.34.1
+2.43.0
 

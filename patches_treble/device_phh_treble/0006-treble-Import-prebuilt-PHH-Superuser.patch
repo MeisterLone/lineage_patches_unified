@@ -1,7 +1,7 @@
-From 220d4b045c0c0c591e7ea2c714960495ef7e3bbd Mon Sep 17 00:00:00 2001
+From 6c6fd45082c6841de59bb9d55592839a73478b16 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Sat, 15 Jul 2023 17:01:27 +0800
-Subject: [PATCH 6/8] treble: Import prebuilt PHH Superuser
+Subject: [PATCH] treble: Import prebuilt PHH Superuser
 
 Change-Id: I9655d706ef3e1f32d0584a68384823db895e0283
 ---
@@ -15606,5 +15606,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.34.1
+2.43.0
 

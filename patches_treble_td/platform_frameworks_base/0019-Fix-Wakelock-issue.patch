@@ -1,28 +1,32 @@
-From 56f66013c55aec2a7825219daab763ca72665a62 Mon Sep 17 00:00:00 2001
+From 88817835eaa8a45b12bf3d79ccd5024a1937734c Mon Sep 17 00:00:00 2001
 From: Alberto Ponces <ponces26@gmail.com>
-Date: Tue, 2 Feb 2021 10:20:51 +0000
-Subject: [PATCH 19/51] Fix Wakelock issue
+Date: Tue, 11 Aug 2026 08:54:03 +0000
+Subject: [PATCH] Fix Wakelock issue
 
 Prevent SystemUI crash due to "WakeLock under-locked Doze" (issue #12) by only releasing a wakelock that was not already released
+
+[Port to A16] Anonymous WakeLock impl in WakeLock.java was extracted to ClientTrackingWakeLock.kt (AOSP 2024); isHeld guard applied to its release().
+
+Change-Id: I8a1fcb05d3fbebab39adff45a1d916e4bfc07c0a
 ---
- .../src/com/android/systemui/util/wakelock/WakeLock.java      | 4 +++-
+ .../android/systemui/util/wakelock/ClientTrackingWakeLock.kt  | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java b/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
-index 707751a58d84..72a522e22693 100644
---- a/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
-+++ b/packages/SystemUI/src/com/android/systemui/util/wakelock/WakeLock.java
-@@ -150,7 +150,9 @@ public interface WakeLock {
-                 if (logger != null) {
-                     logger.logRelease(inner, why, count);
-                 }
--                inner.release();
-+                if (inner.isHeld()) {
-+                    inner.release();
-+                }
-             }
+diff --git a/packages/SystemUI/src/com/android/systemui/util/wakelock/ClientTrackingWakeLock.kt b/packages/SystemUI/src/com/android/systemui/util/wakelock/ClientTrackingWakeLock.kt
+index 2157fafa78ff..8272820a34e1 100644
+--- a/packages/SystemUI/src/com/android/systemui/util/wakelock/ClientTrackingWakeLock.kt
++++ b/packages/SystemUI/src/com/android/systemui/util/wakelock/ClientTrackingWakeLock.kt
+@@ -54,7 +54,9 @@ class ClientTrackingWakeLock(
+         }
  
-             /** @see PowerManager.WakeLock#wrap(Runnable) */
+         logger?.logRelease(pmWakeLock, why, count)
+-        pmWakeLock.release()
++        if (pmWakeLock.isHeld) {
++            pmWakeLock.release()
++        }
+     }
+ 
+     override fun wrap(r: Runnable): Runnable = WakeLock.wrapImpl(this, r)
 -- 
-2.34.1
+2.43.0
 

@@ -1,21 +1,25 @@
-From 0faff8144a45bfd70395614b4cd0d611d0b3cc2a Mon Sep 17 00:00:00 2001
+From 92af33324f40270f006d61215e1ecff39deb2b5e Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Wed, 18 Oct 2023 16:57:34 -0400
-Subject: [PATCH 39/51] Samsung tablets use SW_MACHINE_COVER rather than SW_LID
+Date: Tue, 11 Aug 2026 09:07:54 +0000
+Subject: [PATCH] Samsung tablets use SW_MACHINE_COVER rather than SW_LID
 
 So check whether SW_MACHINE_COVER is declared, then use it
 Otherwise stick to SW_LID
 
 Should fix https://github.com/phhusson/treble_experimentations/issues/2572
+
+[Port to A16] All anchors intact; applied verbatim.
+
+Change-Id: I6831fc5b604aba54024cedb615952b9015fdf602
 ---
  .../server/input/InputManagerService.java     | 25 ++++++++++++++++---
  1 file changed, 21 insertions(+), 4 deletions(-)
 
 diff --git a/services/core/java/com/android/server/input/InputManagerService.java b/services/core/java/com/android/server/input/InputManagerService.java
-index 05b1cb69235b..0f44f37e2262 100644
+index 841cb61601ea..0d4a2b739a90 100644
 --- a/services/core/java/com/android/server/input/InputManagerService.java
 +++ b/services/core/java/com/android/server/input/InputManagerService.java
-@@ -376,6 +376,9 @@ public class InputManagerService extends IInputManager.Stub
+@@ -443,6 +443,9 @@ public class InputManagerService extends IInputManager.Stub
      /** Switch code: Microphone. When set, the mic is muted. */
      public static final int SW_MUTE_DEVICE = 0x0e;
  
@@ -25,8 +29,8 @@ index 05b1cb69235b..0f44f37e2262 100644
      public static final int SW_LID_BIT = 1 << SW_LID;
      public static final int SW_TABLET_MODE_BIT = 1 << SW_TABLET_MODE;
      public static final int SW_KEYPAD_SLIDE_BIT = 1 << SW_KEYPAD_SLIDE;
-@@ -387,6 +390,8 @@ public class InputManagerService extends IInputManager.Stub
-             SW_HEADPHONE_INSERT_BIT | SW_MICROPHONE_INSERT_BIT | SW_JACK_PHYSICAL_INSERT_BIT | SW_LINEOUT_INSERT_BIT;
+@@ -456,6 +459,8 @@ public class InputManagerService extends IInputManager.Stub
+                                            | SW_VIDEOOUT_INSERT_BIT;
      public static final int SW_CAMERA_LENS_COVER_BIT = 1 << SW_CAMERA_LENS_COVER;
      public static final int SW_MUTE_DEVICE_BIT = 1 << SW_MUTE_DEVICE;
 +    public static final int SW_MACHINE_COVER_BIT = 1 << SW_MACHINE_COVER;
@@ -34,7 +38,7 @@ index 05b1cb69235b..0f44f37e2262 100644
  
      // The following are layer numbers used for z-ordering the input overlay layers on the display.
      // This is used for ordering layers inside {@code DisplayContent#getInputOverlayLayer()}.
-@@ -499,6 +504,16 @@ public class InputManagerService extends IInputManager.Stub
+@@ -604,6 +609,16 @@ public class InputManagerService extends IInputManager.Stub
          mWiredAccessoryCallbacks = callbacks;
      }
  
@@ -51,7 +55,7 @@ index 05b1cb69235b..0f44f37e2262 100644
      void registerLidSwitchCallbackInternal(@NonNull LidSwitchCallback callback) {
          synchronized (mLidSwitchLock) {
              mLidSwitchCallbacks.add(callback);
-@@ -507,7 +522,8 @@ public class InputManagerService extends IInputManager.Stub
+@@ -612,7 +627,8 @@ public class InputManagerService extends IInputManager.Stub
              // state will be reported as KEY_STATE_UNKNOWN. The callback will be triggered in
              // systemRunning().
              if (mSystemReady) {
@@ -61,7 +65,7 @@ index 05b1cb69235b..0f44f37e2262 100644
                          == KEY_STATE_UP;
                  callback.notifyLidSwitchChanged(0 /* whenNanos */, lidOpen);
              }
-@@ -545,7 +561,8 @@ public class InputManagerService extends IInputManager.Stub
+@@ -656,7 +672,8 @@ public class InputManagerService extends IInputManager.Stub
  
              // Send the initial lid switch state to any callback registered before the system was
              // ready.
@@ -71,7 +75,7 @@ index 05b1cb69235b..0f44f37e2262 100644
              for (int i = 0; i < mLidSwitchCallbacks.size(); i++) {
                  LidSwitchCallback callback = mLidSwitchCallbacks.get(i);
                  callback.notifyLidSwitchChanged(0 /* whenNanos */, switchState == KEY_STATE_UP);
-@@ -2370,8 +2387,8 @@ public class InputManagerService extends IInputManager.Stub
+@@ -2506,8 +2523,8 @@ public class InputManagerService extends IInputManager.Stub
                      + ", mask=" + Integer.toHexString(switchMask));
          }
  
@@ -83,5 +87,5 @@ index 05b1cb69235b..0f44f37e2262 100644
                  if (mSystemReady) {
                      for (int i = 0; i < mLidSwitchCallbacks.size(); i++) {
 -- 
-2.34.1
+2.43.0
 

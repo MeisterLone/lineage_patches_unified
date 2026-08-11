@@ -1,58 +1,110 @@
-From 8b967646bace954b92141d3d67ca95f8cf8ac606 Mon Sep 17 00:00:00 2001
+From 60b7e1db7c04ce4fc06a2ad417987cf00cf2274d Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Tue, 30 May 2023 17:34:03 -0400
+Date: Tue, 11 Aug 2026 08:50:19 +0000
 Subject: [PATCH 6/7] Add a property to cap declared le vendor version. Found
  needed on unisoc
 
----
- system/gd/hci/controller.cc | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+[ported to lineage-23.2/A16: controller.cc -> controller_impl.cc; early
+returns call vendor_promise.set_value() first per A16 convention (L21 bare
+return would leave the promise unsatisfied); cap checks extended to the new
+A16 v1.03/v1.04/v1.05 capability blocks]
 
-diff --git a/system/gd/hci/controller.cc b/system/gd/hci/controller.cc
-index 237dbe6b93..ce1b46c3bb 100644
---- a/system/gd/hci/controller.cc
-+++ b/system/gd/hci/controller.cc
-@@ -634,6 +634,13 @@ struct Controller::impl {
+Change-Id: I4c8a1f9e6a1f4b2g9f7f1e5g3b3d0e32e86b5285
+---
+ system/gd/hci/controller_impl.cc | 41 ++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/system/gd/hci/controller_impl.cc b/system/gd/hci/controller_impl.cc
+index 71a814db4a..fb163898ef 100644
+--- a/system/gd/hci/controller_impl.cc
++++ b/system/gd/hci/controller_impl.cc
+@@ -696,6 +696,17 @@ struct ControllerImpl::impl {
      }
      vendor_capabilities_.is_supported_ = 0x01;
  
 +    int vendor_cap_max = 0xffff;
-+    std::string vendor_cap_max_prop = GetSystemProperty("persist.sys.bt.max_vendor_cap").value_or("");
++    std::string vendor_cap_max_prop =
++            GetSystemProperty("persist.sys.bt.max_vendor_cap").value_or("");
 +    if (vendor_cap_max_prop != "") {
-+        vendor_cap_max = std::stoi(vendor_cap_max_prop);
++      vendor_cap_max = std::stoi(vendor_cap_max_prop);
 +    }
-+    if (vendor_cap_max < 55) return;
++    if (vendor_cap_max < 55) {
++      vendor_promise.set_value();
++      return;
++    }
 +
      // v0.55
      BaseVendorCapabilities base_vendor_capabilities = complete_view.GetBaseVendorCapabilities();
      vendor_capabilities_.max_advt_instances_ = base_vendor_capabilities.max_advt_instances_;
-@@ -653,6 +660,8 @@ struct Controller::impl {
+@@ -715,6 +726,11 @@ struct ControllerImpl::impl {
        return;
      }
  
-+    if (vendor_cap_max < 95) return;
++    if (vendor_cap_max < 95) {
++      vendor_promise.set_value();
++      return;
++    }
 +
      // v0.95
      auto v95 = LeGetVendorCapabilitiesComplete095View::Create(complete_view);
      if (!v95.IsValid()) {
-@@ -669,6 +678,8 @@ struct Controller::impl {
+@@ -731,6 +747,11 @@ struct ControllerImpl::impl {
        return;
      }
  
-+    if (vendor_cap_max < 96) return;
++    if (vendor_cap_max < 96) {
++      vendor_promise.set_value();
++      return;
++    }
 +
      // v0.96
      auto v96 = LeGetVendorCapabilitiesComplete096View::Create(v95);
      if (!v96.IsValid()) {
-@@ -683,6 +694,8 @@ struct Controller::impl {
+@@ -745,6 +766,11 @@ struct ControllerImpl::impl {
        return;
      }
  
-+    if (vendor_cap_max < 98) return;
++    if (vendor_cap_max < 98) {
++      vendor_promise.set_value();
++      return;
++    }
 +
      // v0.98
      auto v98 = LeGetVendorCapabilitiesComplete098View::Create(v96);
      if (!v98.IsValid()) {
--- 
-2.34.1
-
+@@ -756,6 +782,11 @@ struct ControllerImpl::impl {
+             v98.GetA2dpSourceOffloadCapabilityMask();
+     vendor_capabilities_.bluetooth_quality_report_support_ = v98.GetBluetoothQualityReportSupport();
+ 
++    if (vendor_cap_max < 103) {
++      vendor_promise.set_value();
++      return;
++    }
++
+     // v1.03
+     auto v103 = LeGetVendorCapabilitiesComplete103View::Create(v98);
+     if (!v103.IsValid()) {
+@@ -765,6 +796,11 @@ struct ControllerImpl::impl {
+     }
+     vendor_capabilities_.dynamic_audio_buffer_support_ = v103.GetDynamicAudioBufferSupport();
+ 
++    if (vendor_cap_max < 104) {
++      vendor_promise.set_value();
++      return;
++    }
++
+     // v1.04
+     auto v104 = LeGetVendorCapabilitiesComplete104View::Create(v103);
+     if (!v104.IsValid()) {
+@@ -773,6 +809,11 @@ struct ControllerImpl::impl {
+       vendor_capabilities_.a2dp_offload_v2_support_ = v104.GetA2dpOffloadV2Support();
+     }
+ 
++    if (vendor_cap_max < 105) {
++      vendor_promise.set_value();
++      return;
++    }
++
+     // v1.05
+     auto v105 = LeGetVendorCapabilitiesComplete105View::Create(v104);
+     if (!v105.IsValid()) {

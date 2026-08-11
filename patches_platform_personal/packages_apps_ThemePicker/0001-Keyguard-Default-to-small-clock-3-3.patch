@@ -1,4 +1,4 @@
-From f80b0972ed320771192feddfe0b0da27041e19f5 Mon Sep 17 00:00:00 2001
+From 170cdfee6a9c6ea446cd9ec8ea0d65a3785b4753 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Mon, 20 Nov 2023 10:43:38 +0800
 Subject: [PATCH] Keyguard: Default to small clock (3/3)
@@ -9,10 +9,10 @@ Change-Id: I7c11ec93df2135d19afbe30cd0c1c017c3901d4f
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/com/android/customization/picker/clock/data/repository/ClockPickerRepositoryImpl.kt b/src/com/android/customization/picker/clock/data/repository/ClockPickerRepositoryImpl.kt
-index 370668ef..ea7a5582 100644
+index bf2ec3a5..95fac005 100644
 --- a/src/com/android/customization/picker/clock/data/repository/ClockPickerRepositoryImpl.kt
 +++ b/src/com/android/customization/picker/clock/data/repository/ClockPickerRepositoryImpl.kt
-@@ -194,7 +194,7 @@ class ClockPickerRepositoryImpl(
+@@ -253,7 +253,7 @@ constructor(
          // The color tone to apply to the selected color
          private const val KEY_METADATA_COLOR_TONE_PROGRESS = "metadataColorToneProgress"
  
@@ -23,5 +23,5 @@ index 370668ef..ea7a5582 100644
      }
  }
 -- 
-2.34.1
+2.43.0
 

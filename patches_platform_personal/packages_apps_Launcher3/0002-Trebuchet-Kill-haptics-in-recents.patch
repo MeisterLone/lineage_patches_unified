@@ -1,4 +1,4 @@
-From c30884fb18fcfe440cbaaaffd441f9164027511c Mon Sep 17 00:00:00 2001
+From 17540bbfaa1687e979d13fc3e853036a363759a4 Mon Sep 17 00:00:00 2001
 From: Andy CrossGate Yan <GeForce8800Ultra@gmail.com>
 Date: Fri, 18 Mar 2022 08:42:18 +0000
 Subject: [PATCH 2/3] Trebuchet: Kill haptics in recents
@@ -8,15 +8,15 @@ This partially reverts commit cc5c8843dfebfa92057b6ce8904ac58cd05ffaef.
 Change-Id: Ie3b0eabe8cc0421e696720740edc492cae2f5153
 ---
  .../NoButtonQuickSwitchTouchController.java   |  9 +--------
- .../TaskViewTouchController.java              |  5 -----
+ .../TaskViewTouchControllerDeprecated.java    |  5 -----
  .../android/quickstep/views/RecentsView.java  | 19 -------------------
  3 files changed, 1 insertion(+), 32 deletions(-)
 
 diff --git a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/NoButtonQuickSwitchTouchController.java b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/NoButtonQuickSwitchTouchController.java
-index 3a1c42dc89..0e0397be39 100644
+index 2f3ac5f48c..efdb5303fd 100644
 --- a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/NoButtonQuickSwitchTouchController.java
 +++ b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/NoButtonQuickSwitchTouchController.java
-@@ -441,14 +441,7 @@ public class NoButtonQuickSwitchTouchController implements TouchController,
+@@ -456,14 +456,7 @@ public class NoButtonQuickSwitchTouchController implements TouchController,
              nonOverviewAnim.setFloatValues(startProgress, endProgress);
              mNonOverviewAnim.dispatchOnStart();
          }
@@ -32,16 +32,16 @@ index 3a1c42dc89..0e0397be39 100644
              InteractionJankMonitorWrapper.cancel(Cuj.CUJ_LAUNCHER_QUICK_SWITCH);
          }
  
-diff --git a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchController.java b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchController.java
-index e9f2d4f019..5487414660 100644
---- a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchController.java
-+++ b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchController.java
-@@ -374,11 +374,6 @@ public abstract class TaskViewTouchController<T extends BaseDraggingActivity>
+diff --git a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchControllerDeprecated.java b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchControllerDeprecated.java
+index b57eba547f..7f85d83f30 100644
+--- a/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchControllerDeprecated.java
++++ b/quickstep/src/com/android/launcher3/uioverrides/touchcontrollers/TaskViewTouchControllerDeprecated.java
+@@ -377,11 +377,6 @@ public class TaskViewTouchControllerDeprecated<
          mCurrentAnimation.setEndAction(this::clearState);
-         mCurrentAnimation.startWithVelocity(mActivity, goingToEnd, Math.abs(velocity),
+         mCurrentAnimation.startWithVelocity(mContainer, goingToEnd, Math.abs(velocity),
                  mEndDisplacement, animationDuration);
 -        if (goingUp && goingToEnd && !mIsDismissHapticRunning) {
--            VibratorWrapper.INSTANCE.get(mActivity).vibrate(TASK_DISMISS_VIBRATION_PRIMITIVE,
+-            VibratorWrapper.INSTANCE.get(mContainer).vibrate(TASK_DISMISS_VIBRATION_PRIMITIVE,
 -                    TASK_DISMISS_VIBRATION_PRIMITIVE_SCALE, TASK_DISMISS_VIBRATION_FALLBACK);
 -            mIsDismissHapticRunning = true;
 -        }
@@ -49,10 +49,10 @@ index e9f2d4f019..5487414660 100644
          mDraggingEnabled = true;
      }
 diff --git a/quickstep/src/com/android/quickstep/views/RecentsView.java b/quickstep/src/com/android/quickstep/views/RecentsView.java
-index 80f884b4a9..8dc8c20ff7 100644
+index b2259eeaa4..8c9e9c592e 100644
 --- a/quickstep/src/com/android/quickstep/views/RecentsView.java
 +++ b/quickstep/src/com/android/quickstep/views/RecentsView.java
-@@ -1604,25 +1604,6 @@ public abstract class RecentsView<ACTIVITY_TYPE extends StatefulActivity<STATE_T
+@@ -1891,25 +1891,6 @@ public abstract class RecentsView<
          }
      }
  
@@ -77,7 +77,7 @@ index 80f884b4a9..8dc8c20ff7 100644
 -
      @Override
      protected void determineScrollingStart(MotionEvent ev, float touchSlopScale) {
-         // Enables swiping to the left or right only if the task overlay is not modal.
+         // Enables swiping to the left or right only if the task overlay is not modal, and event
 -- 
-2.34.1
+2.43.0
 

@@ -1,7 +1,7 @@
-From f0e55afcbac617bc597307e372d7b54959e50b48 Mon Sep 17 00:00:00 2001
+From cd9581eab743ca437079ed96400028414b2ef3d4 Mon Sep 17 00:00:00 2001
 From: Raphael Mounier <mounierr07@gmail.com>
 Date: Thu, 6 Oct 2022 08:35:38 +0200
-Subject: [PATCH 07/14] Fix signalstrength for huawei kirin (hi6250, hi3670)
+Subject: [PATCH 06/13] Fix signalstrength for huawei kirin (hi6250, hi3670)
 
 The RILUtils.convertHalSignalStrength function does not work correctly under Huawei hi6250 and hi3660 platform. We have therefore replaced this function with a new one specifically for this Kirin platform.
 
@@ -21,10 +21,10 @@ Change-Id: I4409683dc7cd9b870237a2939188b71ce94a9fc7
  2 files changed, 139 insertions(+), 4 deletions(-)
 
 diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
-index 503110ebc6..c857697f9f 100644
+index fb495f2292..91c58ef065 100644
 --- a/src/java/com/android/internal/telephony/RIL.java
 +++ b/src/java/com/android/internal/telephony/RIL.java
-@@ -7003,6 +7003,129 @@ public class RIL extends BaseCommands implements CommandsInterface {
+@@ -6846,6 +6846,129 @@ public class RIL extends BaseCommands implements CommandsInterface {
                  new CellSignalStrengthNr());
      }
  
@@ -155,10 +155,10 @@ index 503110ebc6..c857697f9f 100644
          mLastBarringInfo = barringInfo;
          mBarringInfoChangedRegistrants.notifyRegistrants(new AsyncResult(null, barringInfo, null));
 diff --git a/src/java/com/android/internal/telephony/RadioIndication.java b/src/java/com/android/internal/telephony/RadioIndication.java
-index b29a7bf434..f62425d22a 100644
+index aaccdb931c..dcd427a824 100644
 --- a/src/java/com/android/internal/telephony/RadioIndication.java
 +++ b/src/java/com/android/internal/telephony/RadioIndication.java
-@@ -241,13 +241,25 @@ public class RadioIndication extends IRadioIndication.Stub {
+@@ -228,13 +228,25 @@ public class RadioIndication extends IRadioIndication.Stub {
  
      public void currentSignalStrength(int indicationType,
                                        android.hardware.radio.V1_0.SignalStrength signalStrength) {
@@ -189,5 +189,5 @@ index b29a7bf434..f62425d22a 100644
          if (mRil.mSignalStrengthRegistrant != null) {
              mRil.mSignalStrengthRegistrant.notifyRegistrant(new AsyncResult (null, ss, null));
 -- 
-2.34.1
+2.43.0
 

@@ -1,7 +1,7 @@
-From 56b756f59bdb50773ae224154577c8bd49535f6a Mon Sep 17 00:00:00 2001
+From 26db4628d9242c11fb7698888c82e2ed6f4bc8f2 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Fri, 6 Oct 2023 19:01:27 -0400
-Subject: [PATCH 19/26] Disable project_quota on old devices but new enough to
+Subject: [PATCH 19/27] Disable project_quota on old devices but new enough to
  have encryption (they do keep quota support)
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 19/26] Disable project_quota on old devices but new enough to
  1 file changed, 8 insertions(+)
 
 diff --git a/fs_mgr/fs_mgr.cpp b/fs_mgr/fs_mgr.cpp
-index d3249e151..738fec4cc 100644
+index 763d9b122..514fefd13 100644
 --- a/fs_mgr/fs_mgr.cpp
 +++ b/fs_mgr/fs_mgr.cpp
-@@ -388,6 +388,14 @@ static void tune_quota(const std::string& blk_device, const FstabEntry& entry,
+@@ -447,6 +447,14 @@ static void tune_quota(const std::string& blk_device, const FstabEntry& entry,
          want_quota = false;
      }
  
@@ -28,5 +28,5 @@ index d3249e151..738fec4cc 100644
          LERROR << "Unable to " << (want_quota ? "enable" : "disable") << " quotas on " << blk_device
                 << " because " TUNE2FS_BIN " is missing";
 -- 
-2.34.1
+2.43.0
 

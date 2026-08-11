@@ -1,36 +1,32 @@
-From 7de442051c8745bf2dd55fdf24645c2eb42af403 Mon Sep 17 00:00:00 2001
+From 9daa085d297639dc47cf19e0e902978cbbaf42c3 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
-Date: Sat, 17 Jun 2023 08:31:55 -0400
-Subject: [PATCH 30/51] Add Mediatek power hints on touch
+Date: Tue, 11 Aug 2026 09:03:25 +0000
+Subject: [PATCH] Add Mediatek power hints on touch
 
-Mediatek has multiple HALs (which existed concurrently), so it is a bit
-of a mess.
-From what I can tell, mOldMtkPerf is used on Android 10 vendors, while
-mMtkPerf is used on Android 11/12 vendors.
-If anyone has an Android 9 vendor and want to take a look, I think it
-would be something like this:
+Mediatek has multiple HALs (which existed concurrently), so it is a bit of a mess.
+From what I can tell, mOldMtkPerf is used on Android 10 vendors, while mMtkPerf is used on Android 11/12 vendors.
+If anyone has an Android 9 vendor and want to take a look, I think it would be something like this:
 vendor.mediatek.hardware.power.V2_0.IPower.powerHint()
 
-On some devices, sending the touch boost isn't very helpful. Our guess
-is that Android 12 rendering got a lot heavier, and then touch boost is
-not enough. So, we add a property to /cheat/ and report a bigger boost:
-APP_ROTATE.
-On the few devices we've seen, touch boost only boosts scheduler, while
-app rotate will also for cpu min frequency.
-Experimentally using this app rotate boost indeed makes the device much
-smoother.
+On some devices, sending the touch boost isn't very helpful. Our guess is that Android 12 rendering got a lot heavier, and then touch boost is not enough. So, we add a property to /cheat/ and report a bigger boost: APP_ROTATE.
+On the few devices we've seen, touch boost only boosts scheduler, while app rotate will also for cpu min frequency.
+Experimentally using this app rotate boost indeed makes the device much smoother.
 
 Change-Id: I9f1eac5a20b98920a5d0c8204fe4d165ba069f5a
+
+[Port to A16] Anchors intact in DisplayPolicy (fields, ctor screen-on block, onFling, onDown); Android.bp HIDL comment grouping preserved.
+
+Change-Id: I6240f9409c68f5a26600ad011ca6ba6d1d0a9b5a
 ---
  services/core/Android.bp                      |  4 +-
  .../com/android/server/wm/DisplayPolicy.java  | 49 +++++++++++++++++++
  2 files changed, 52 insertions(+), 1 deletion(-)
 
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index e7ed90dffb9d..7638a7e36a64 100644
+index de960b6c294d..b69c1aa6102b 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -256,7 +256,9 @@ java_library_static {
+@@ -241,7 +241,9 @@ java_library_static {
          "net_flags_lib",
          "stats_flags_lib",
          "core_os_flags_lib",
@@ -38,24 +34,24 @@ index e7ed90dffb9d..7638a7e36a64 100644
 +        // HIDL
 +        "vendor.mediatek.hardware.mtkpower-V1.1-java",
 +        "vendor.samsung.hardware.sysinput-V1.2-java",
-     ],
-     javac_shard_size: 50,
-     javacflags: [
+         "connectivity_flags_lib",
+         "device_config_service_flags_java",
+         "aconfig_new_storage_flags_lib",
 diff --git a/services/core/java/com/android/server/wm/DisplayPolicy.java b/services/core/java/com/android/server/wm/DisplayPolicy.java
-index b6e614b55041..68013dd54778 100644
+index b05de11ffc61..2f85810c8967 100644
 --- a/services/core/java/com/android/server/wm/DisplayPolicy.java
 +++ b/services/core/java/com/android/server/wm/DisplayPolicy.java
-@@ -220,6 +220,9 @@ public class DisplayPolicy {
+@@ -219,6 +219,9 @@ public class DisplayPolicy {
       */
      private boolean mRemoteInsetsControllerControlsSystemBars;
  
 +    private vendor.mediatek.hardware.mtkpower.V1_1.IMtkPerf mMtkPerf;
 +    private vendor.mediatek.hardware.mtkpower.V1_0.IMtkPower mOldMtkPerf;
 +
+     @Nullable
      StatusBarManagerInternal getStatusBarManagerInternal() {
          synchronized (mServiceAcquireLock) {
-             if (mStatusBarManagerInternal == null) {
-@@ -450,6 +453,19 @@ public class DisplayPolicy {
+@@ -460,6 +463,19 @@ public class DisplayPolicy {
              mScreenOnEarly = true;
              mScreenOnFully = true;
          }
@@ -75,7 +71,7 @@ index b6e614b55041..68013dd54778 100644
  
          final Looper looper = UiThread.getHandler().getLooper();
          mHandler = new PolicyHandler(looper);
-@@ -534,6 +550,17 @@ public class DisplayPolicy {
+@@ -545,6 +561,17 @@ public class DisplayPolicy {
                          mService.mPowerManagerInternal.setPowerBoost(
                                  Boost.INTERACTION, duration);
                      }
@@ -93,7 +89,7 @@ index b6e614b55041..68013dd54778 100644
                  }
  
                  @Override
-@@ -552,6 +579,28 @@ public class DisplayPolicy {
+@@ -563,6 +590,28 @@ public class DisplayPolicy {
                      if (listener != null) {
                          listener.onTouchStart();
                      }
@@ -123,5 +119,5 @@ index b6e614b55041..68013dd54778 100644
  
                  @Override
 -- 
-2.34.1
+2.43.0
 
