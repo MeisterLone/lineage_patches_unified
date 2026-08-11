@@ -1,0 +1,30 @@
+From 3f655efdcd060ed7bd2b8f07f86bfba0dbe19a25 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 23:26:35 +0000
+Subject: [PATCH] treble: Set C10 build display ID globally
+
+Use the A16 BuildDisplayId override so merged product does not supersede the researched retail display ID at runtime.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ generate.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/generate.sh b/generate.sh
+index 57b3b59..daa2591 100644
+--- a/generate.sh
++++ b/generate.sh
+@@ -117,7 +117,7 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.build.fingerprint=FancyDay/C10US/C10:14/
+ # PRIVATE_BUILD_DESC make gen_build_prop.py exit with "isn't a valid prop override".
+ # BuildDesc must stay last: its value contains spaces and is rejoined from the words
+ # that follow it.
+-PRODUCT_BUILD_PROP_OVERRIDES += SystemBrand=FancyDay SystemManufacturer=FancyDay SystemModel=C10 SystemDevice=C10 SystemName=C10US ProductBrand=FancyDay ProductManufacturer=FancyDay ProductModel=C10 DeviceName=C10 DeviceProduct=C10US BuildFingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys BuildDesc="a523_y83_arm64-user 14 UP1A.231105.001.A1 20240316 release-keys"
++PRODUCT_BUILD_PROP_OVERRIDES += SystemBrand=FancyDay SystemManufacturer=FancyDay SystemModel=C10 SystemDevice=C10 SystemName=C10US ProductBrand=FancyDay ProductManufacturer=FancyDay ProductModel=C10 DeviceName=C10 DeviceProduct=C10US BuildDisplayId=863C_C10_20240619 BuildFingerprint=FancyDay/C10US/C10:14/UP1A.231105.001.A1/20240316:user/release-keys BuildDesc="a523_y83_arm64-user 14 UP1A.231105.001.A1 20240316 release-keys"
+ 
+ PRODUCT_PACKAGES += $extra_packages
+ 
+-- 
+2.43.0
+

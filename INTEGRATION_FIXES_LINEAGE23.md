@@ -208,3 +208,17 @@ AGP 7.4 warns that source namespace must no longer come from the manifest `packa
 - Patch: `patches_treble/treble_app/9010-Migrate-package-namespace-to-Gradle.patch`
 - A16 post-port baseline: `treble_app@c1e1029`
 - Patch SHA-256: `5f11466e4115172c80db47d3d8896d7fea35071d3c3b9e1226bdad81df0b16fd`
+
+## 9001 + 9050 — Preserve the researched runtime display ID without falsifying BuildId
+
+A16 product build props force `ro.build.display.id` from `BuildId`, so the system-only optional property lost at
+runtime and Settings reported `BP4A.251205.006`. The build/Soong patch adds a dedicated `BuildDisplayId` config key
+(defaulting to truthful `BuildId`) and uses it only for display-ID generation. The device patch overrides that key
+with stock `863C_C10_20240619`; `ro.build.id`, A16 SDK/release/security patch, and userdebug behavior remain truthful.
+
+- Patches:
+  - `patches_treble/build_soong/9001-Add-build-display-ID-override.patch`
+  - `patches_treble/device_phh_treble/9050-Set-C10-build-display-ID-globally.patch`
+- A16 post-integration baselines: `build/soong@07f8672dc`, `device/phh/treble@5692ab6`
+- Patch SHA-256: `9203b564c2f16d0280ba0137756e4b71e5314ff6be30e85407c4faddacb3f93d`
+- Patch SHA-256: `d97e12f81bb6bb25b23fa4c1f91e49af954e377187264510530368dcaa882cb7`

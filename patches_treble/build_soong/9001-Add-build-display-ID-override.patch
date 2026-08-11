@@ -1,0 +1,54 @@
+From f9f60e0852abfcd11517185fe5639ee9f84d579d Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Tue, 11 Aug 2026 23:26:17 +0000
+Subject: [PATCH] gen_build_prop: Add display ID override
+
+Keep BuildId truthful while allowing products to override only ro.build.display.id through PRODUCT_BUILD_PROP_OVERRIDES BuildDisplayId.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I6af5ecf5b69bed7920e021e2adf61d2209dbf92d
+---
+ scripts/gen_build_prop.py | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/scripts/gen_build_prop.py b/scripts/gen_build_prop.py
+index bdd742469..1ea824a09 100644
+--- a/scripts/gen_build_prop.py
++++ b/scripts/gen_build_prop.py
+@@ -126,6 +126,7 @@ def parse_args():
+   if config["BuildNumber"].startswith("eng."):
+     config["BuildNumber"] = config["DateUtc"]
+ 
++  config["BuildDisplayId"] = config["BuildId"]
+   override_config(config)
+   if args.partition == "system":
+     config['ProductBrand'] = config['SystemBrand']
+@@ -215,9 +216,9 @@ def generate_build_info(args):
+     # partition prop so that a forced vendor/odm override cannot win.
+     if config["BuildVariant"] != "eng":
+       if config["DisplayBuildNumber"]:
+-        print(f"ro.build.display.id={config['BuildId']}.{config['BuildNumber']} {config['BuildKeys']}")
++        print(f"ro.build.display.id={config['BuildDisplayId']}.{config['BuildNumber']} {config['BuildKeys']}")
+       else:
+-        print(f"ro.build.display.id={config['BuildId']} {config['BuildKeys']}")
++        print(f"ro.build.display.id={config['BuildDisplayId']} {config['BuildKeys']}")
+     else:
+       print(f"ro.build.display.id={config['LineageDesc']}")
+   elif config["BuildVariant"] != "eng":
+@@ -226,9 +227,9 @@ def generate_build_info(args):
+ 
+     # Dev. branches should have DISPLAY_BUILD_NUMBER set
+     if config["DisplayBuildNumber"]:
+-      print(f"ro.build.display.id?={config['BuildId']}.{config['BuildNumber']} {config['BuildKeys']}")
++      print(f"ro.build.display.id?={config['BuildDisplayId']}.{config['BuildNumber']} {config['BuildKeys']}")
+     else:
+-      print(f"ro.build.display.id?={config['BuildId']} {config['BuildKeys']}")
++      print(f"ro.build.display.id?={config['BuildDisplayId']} {config['BuildKeys']}")
+   else:
+     # Non-user builds should show detailed build information (See build desc above)
+     print(f"ro.build.display.id?={config['LineageDesc']}")
+-- 
+2.43.0
+
