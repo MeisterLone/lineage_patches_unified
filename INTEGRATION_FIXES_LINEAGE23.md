@@ -129,3 +129,12 @@ adds its matching no-op implementation beside the slot-mapping stub.
 - Patch: `patches_treble_td/platform_packages_services_Telephony/9012-Add-restored-slot-status-stub.patch`
 - A16 post-integration baseline: `packages/services/Telephony@c4e3719fa`
 - Patch SHA-256: `72f4eaffe34cdda63025c4bbf075368be222f4024e9fe5cbc3085919aea3b5b8`
+
+## 9013 — Add remaining restored command stubs to FakeRil
+
+`BaseCommands` covers registration/state methods, but six restored command methods remained abstract. The patch
+adds no-op FakeRil implementations for IMEI, IMEISV, PDP-context list, raw/string OEM requests, and radio reset.
+
+- Patch: `patches_treble_td/platform_packages_services_Telephony/9013-Add-restored-command-stubs.patch`
+- A16 post-integration baseline: `packages/services/Telephony@8608751e3`
+- Patch SHA-256: `4f2359ec6195ce2d036400dee82aab362a3879356f45e4fba1bcecd382fc34b6`
