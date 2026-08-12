@@ -291,13 +291,13 @@ persisted and can disable the behavior.
 Physical inspection confirmed the external slot is microSD, not SIM. Runtime also reports
 `ro.vendor.sw.embeded.telephony=false`, modem status off, no active subscription, and no modem device node. The TD
 base nevertheless copied GSM/IMS feature XMLs, causing PackageManager, SetupWizard, and Play device configuration to
-classify the tablet as cellular. The patch removes only those two declarations; Telephony framework compatibility
-code remains available.
+classify the tablet as cellular. Removing those two XMLs removes eight false `android.hardware.telephony*` features
+and the GSM XML's implied `android.software.telecom` declaration. Telephony framework compatibility code remains.
 
 - Patch: `patches_treble/device_phh_treble/9080-Do-not-advertise-cellular-hardware-on-C10.patch`
 - A16 post-integration baseline: `device/phh/treble@50f27fa`
 - Patch SHA-256: `b96bcdecb579a0855ec9147cd571a78d545086851e825c63d8c91e27b6d9a95d`
-- Runtime acceptance: `pm list features` contains no `android.hardware.telephony*`; Wi‑Fi remains declared/working
+- Runtime acceptance: `pm list features` contains no `android.hardware.telephony*` or `android.software.telecom`; Wi-Fi remains declared/working
 
 ## 9090 — Advertise confirmed C10 location hardware
 
@@ -309,3 +309,45 @@ filter applications that require location hardware. The patch installs canonical
 - A16 post-integration baseline: `device/phh/treble@61bca85`
 - Patch SHA-256: `6526f7c360babc25210ad4fb634b4ceba21839ca48418c37953e0a92cf66b06b`
 - Runtime acceptance: `pm list features` includes location, GPS, and network; GPS and Wi-Fi location still work
+
+## Final signed artifact and on-device acceptance
+
+The complete 295-patch tree produced the final signed C10 image:
+
+- Artifact: `lineage-23.2-20260812-UNOFFICIAL-arm64_bgN-signed.img`
+- Size: 3,225,112,576 bytes
+- SHA-256: `1ff235092605a79ac4b44e8eb8ca2cf53260c2352424cabbfbf4c43f2f4460c2`
+- Patch input: `lineage_patches_unified@f0e2c55`
+- Wrapper input: `lineage_build_unified@b84b50f`
+- Build completed in 23 minutes 4 seconds; system image, target-files, APK/APEX signing, OTA key rewrite, and signed image extraction completed.
+- Signed-image inspection confirmed telephony XMLs absent and location/GPS XMLs present before flash.
+- Flashed to logical `system_a` in unlocked fastbootd; userdata and metadata erased; slot A selected.
+
+First-boot acceptance after the final wipe:
+
+- Android 16 / SDK 36; boot completed; boot animation stopped; no ActivityManager ANR.
+- `lmkd` stays running and `/dev/socket/lmkd` exists.
+- ADB is automatically uid 0 without an `adb root` request.
+- Runtime identity is FancyDay / C10US / C10 with display ID `863C_C10_20240619`.
+- Runtime features contain location, GPS, and network location; no telephony or telecom feature remains.
+
+## Play restriction-9 root cause and proof
+
+Static Play Store RE and fresh TLS captures established that server modern availability status 6 maps client-side to
+legacy restriction 9 (`UNAVAILABLE_DEVICE_HARDWARE`). The response contains no finer subreason. GMS checkin captures
+proved `deviceConfiguration` serializes PackageManager features verbatim and that the pre-correction C10 profile
+contained the eight false telephony features while omitting all three working location features.
+
+A reversible same-firmware live test then applied the exact patch behavior before PackageManager startup:
+
+- removed eight `android.hardware.telephony*` entries and `android.software.telecom`;
+- added `android.hardware.location`, `.gps`, and `.network`;
+- retained the same GSF Android ID and all identity/build values;
+- triggered a successful same-ID GMS checkin with the corrected 90-feature profile.
+
+After clearing Play Store data to remove the seven-day `resolveLink` cache, Chrome became normally discoverable,
+downloadable, and installable. This is direct A/B proof that patches 9080+9090 correct the Play hardware profile;
+no additional identity spoofing or catalog workaround is required.
+
+Reference evidence lives under `re-task/playstore-restriction9/` in the device project, including static findings,
+fresh Play response decoding, C10/SM-T580 GMS checkin profiles, and the 56-entry classified profile diff.

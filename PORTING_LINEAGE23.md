@@ -2,16 +2,21 @@
 
 ## Verdict
 
-**GO for A16 patch-tree integration and a first controlled build.**
+**COMPLETE: LineageOS 23.2 / Android 16 TrebleDroid GSI builds, boots, and passes C10 runtime acceptance.**
 
-All 306 manifest rows reached an Opus terminal verdict at confidence >= 90. The retained chain contains 265 patches; 41 rows are verified omissions. Every normalized repository chain was reconstructed with ordered `git apply --check` and `git am` on a fresh baseline worktree. No full ROM build, `systemimage`, device operation, or flash was performed.
+The original 306-row A14→A16 review reached a terminal verdict at confidence >= 90: 265 patches retained and 41 verified omissions. Thirty evidence-backed integration/runtime patches were subsequently added through real builds and hardware testing, producing a current tree of 295 patch files. Every added fix is recorded in `INTEGRATION_FIXES_LINEAGE23.md` and rows 307–336 of `PORTING_PATCH_MANIFEST.csv`.
 
-The promoted trees are:
+Current published inputs and artifact:
 
-- Local: `port-los23-td/patches-l23/`
-- Build server: `/root/port-los23-td/patches-l23/`
-- Patch count: 265
-- Aggregate over sorted `SHA-256  relative/path` records: `167a9ab4e2618131985d9d336017782412acbf458c9578d7b04eed34dd9c6e1b`
+- Patch fork: `MeisterLone/lineage_patches_unified`, branch `lineage-23-td`, head `f0e2c55`
+- Build-wrapper fork: `MeisterLone/lineage_build_unified`, branch `lineage-23-td`, head `b84b50f`
+- Current patch count: 295 (265 reviewed baseline + 30 integration/runtime patches)
+- Baseline 265-patch aggregate: `167a9ab4e2618131985d9d336017782412acbf458c9578d7b04eed34dd9c6e1b`
+- Current 295-patch aggregate: `2dffe6b2b7ed9ab317d668ac61bf23b5b8d858a7540b2decbe9ac6da61d30cea`
+- Final signed image: `lineage-23.2-20260812-UNOFFICIAL-arm64_bgN-signed.img`
+- Size: 3,225,112,576 bytes
+- SHA-256: `1ff235092605a79ac4b44e8eb8ca2cf53260c2352424cabbfbf4c43f2f4460c2`
+- Final image flashed to `system_a`; userdata/metadata wiped; Android 16 boot completed with no ANR
 
 ## Scope and revisions
 
@@ -44,8 +49,12 @@ Opus subsequently restored or fixed several port-stage drops/rebases. Final arti
 | VERIFIED_HIGH | 289 |
 | FIXED_VERIFIED_HIGH | 17 |
 | Confidence below 90 | 0 |
-| Retained patch artifacts | 265 |
+| Retained baseline patch artifacts | 265 |
 | Verified omissions | 41 |
+| Added integration/runtime patch artifacts | 30 |
+| Current patch artifacts | 295 |
+
+The 306 original rows remain the immutable baseline review ledger. Manifest rows 307–336 are the later integration/runtime fixes and are all build-verified; device-facing rows are additionally hardware-verified.
 
 ## Final dropped or superseded rows
 
@@ -120,32 +129,44 @@ These rows must be promoted/applied as a unit; the promoted tree contains every 
 - Securize 1/2 and 2/2 remove the dangerous relock path while preserving unrelated `rw-system.sh` and TrebleApp behavior.
 - No secrets were added to the promoted patch tree.
 
-## First integration-build gates
+## Completed integration and runtime acceptance
 
-No row remains low-confidence, but the first integration build should pay particular attention to:
+The full build pipeline has completed system image generation, target-files packaging, APK/APEX release-key signing, and signed image extraction. Later source-level fixes were compiled incrementally with `64GN nosync`; the wrapper gates validated generated identity and hardware-feature files before signing.
 
-1. `m SystemUI services` for the large frameworks/base chain and cross-repo telephony symbols.
-2. `libaudiopolicymanagerdefault`, `libaudiohal@2.0`, and `libcameraservice` for frameworks/av.
-3. SurfaceFlinger/libgui targets for frameworks/native #14-16 and #20.
-4. Connectivity/netbpfload source composition for the verified no-BPF family.
-5. Building TrebleApp and copying its APK through the existing TD overlay workflow; the source patch alone does not update a prebuilt APK.
+Final on-device results:
 
-## Integration command
+- Android 16 / SDK 36 boots from `system_a`; boot completes with `lmkd` running and no ActivityManager ANR.
+- Rooted ADB starts automatically as uid 0 on the userdebug GSI.
+- Runtime identity resolves to FancyDay / C10US / C10 across system, product, and system_ext; exact retail fingerprint, description, tablet characteristics, and display ID `863C_C10_20240619` are present while SDK/security patch remain truthful.
+- Display/HWC, touch, Wi-Fi, Bluetooth, speaker audio, accelerometer/rotation, GPS, and both cameras work.
+- Both cameras capture photos and video. 4K30 playback is smooth; 4K60 plays with some lag.
+- TrebleApp runtime package remains `me.phh.treble.app`; namespace is supplied by Gradle.
+- The C10 is a Wi-Fi-only tablet. False GSM/IMS declarations and the implied `android.software.telecom` feature are absent. Confirmed location/GPS/network features are present.
+- Static RE plus fresh Play/GMS captures proved Play restriction 9 was server-side device incompatibility computed from the Android-ID checkin profile. GMS had uploaded the stale feature list verbatim. A same-ID live feature correction removed nine false cellular/telecom features, added three location features, and immediately restored normal Chrome discovery/download/install in Play Store.
+- Play Store reports the device certified; Google Earth, YouTube, Chrome, and other tested applications install normally.
 
-The A16 tree currently has no installed `lineage_build_unified` or `lineage_patches_unified` checkout. First wire `/root/port-los23-td/patches-l23/` into an A16 build-wrapper patch repository, preserving its five set directories and project names. Do not modify the read-only A14 reference stack.
+The final signed image itself was inspected after signing:
 
-To apply the full promoted stack, including retained `patches_platform_personal` rows, use the A16 wrapper's equivalent of:
+- absent: `android.hardware.telephony.gsm.xml`, `android.hardware.telephony.ims.xml`
+- present: `android.hardware.location.xml`, `android.hardware.location.gps.xml`
+- present: C10 identity/display properties, rooted-ADB default, and lmkd compatibility code
+
+## Build commands
+
+Production/full replay:
 
 ```bash
-setsid nohup bash lineage_build_unified/buildbot_unified.sh treble 64GN personal \
-  > /root/custom_android/build-los23.log 2>&1 < /dev/null &
-```
-
-For known-good L21 recipe parity without personal-set patches, omit `personal`:
-
-```bash
+cd /root/custom_android/lineage23
+export USE_CCACHE=1 CCACHE_EXEC=$(command -v ccache)
 setsid nohup bash lineage_build_unified/buildbot_unified.sh treble 64GN \
   > /root/custom_android/build-los23.log 2>&1 < /dev/null &
 ```
 
-Do not use `nosync` for the first A16 integration run. The wrapper/patch-repository setup is a separate prerequisite and was intentionally not installed or downloaded during patch-level work.
+Fast source iteration only:
+
+```bash
+setsid nohup bash lineage_build_unified/buildbot_unified.sh treble 64GN nosync \
+  > /root/custom_android/build-los23.log 2>&1 < /dev/null &
+```
+
+Use unsigned `systemimage` builds for future rapid hardware/profile experiments; run release-key target-files signing only for acceptance artifacts. Reuse the existing `~/.android-certs` keyset.
