@@ -1,0 +1,34 @@
+From 7dbc036f39b39ce2c0ce80e3f98444ee1ecd5ad3 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Wed, 12 Aug 2026 00:37:13 +0000
+Subject: [PATCH] adbroot: Start adbd rooted when enabled
+
+Apply the default or persisted Lineage rooted-debugging policy during service initialization so a fresh userdebug boot does not require a manual adb root command.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: I0cb4d5dfda080fa8052ccbb8010a52d298b905ad
+---
+ root/adbroot_service.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/root/adbroot_service.cpp b/root/adbroot_service.cpp
+index 9c2da90a..faa4e273 100644
+--- a/root/adbroot_service.cpp
++++ b/root/adbroot_service.cpp
+@@ -87,6 +87,11 @@ ADBRootService::ADBRootService() : enabled_(true) {
+     if (ReadFileToString(kStoragePath + kEnabled, &buf)) {
+         enabled_ = Trim(buf) == "1";
+     }
++
++    if (enabled_) {
++        SetProperty("service.adb.root", "1");
++        SetProperty("ctl.restart", "adbd");
++    }
+ }
+ 
+ void ADBRootService::Register() {
+-- 
+2.43.0
+

@@ -273,3 +273,15 @@ cgroup is v2, regardless of stale vendor preference. The C10 kernel exposes PSI 
 - A16 baseline: `system/memory/lmkd@5352c3c`
 - Patch SHA-256: `72a401b4343f2345121d41432a666811ab30c70e8ede3c583037c28c61a520d9`
 - Runtime acceptance: lmkd stays running, socket exists, log says PSI/new strategy, ActivityManager retry storm absent
+
+## 9002 — Start adbd rooted when rooted-debugging policy is enabled
+
+The fresh-data default made `adb root` available, but adbd still completed early boot as shell until the command was
+issued. This patch applies the default or persisted Lineage ADBRootService policy during service initialization:
+when enabled, set `service.adb.root=1` and restart adbd once. An explicit later Developer Options toggle remains
+persisted and can disable the behavior.
+
+- Patch: `patches_treble/packages_modules_adb/9002-Start-adbd-root-when-enabled.patch`
+- A16 post-integration baseline: `packages/modules/adb@a75673bb`
+- Patch SHA-256: `38ebc809a67e74f30536cea837b14de06eebc7d6c986bc88e1c1f6693668268d`
+- Runtime acceptance: first stable post-boot `adb shell id` is uid 0 without issuing `adb root`
