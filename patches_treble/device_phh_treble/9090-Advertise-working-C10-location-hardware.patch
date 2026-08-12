@@ -1,0 +1,30 @@
+From 508d0f6a981662b64aa9318802e96c47ca9b02d9 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Wed, 12 Aug 2026 01:43:25 +0000
+Subject: [PATCH] treble: Advertise working C10 location hardware
+
+Install the canonical AOSP GPS and network-location feature XMLs now that accurate GPS and fused/network location are confirmed on hardware.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+---
+ base.mk | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/base.mk b/base.mk
+index 1f2c3b1..966ba00 100644
+--- a/base.mk
++++ b/base.mk
+@@ -2,6 +2,8 @@
+ # TODO: Proper detection
+ PRODUCT_COPY_FILES := \
+     frameworks/native/data/etc/android.hardware.fingerprint.xml:system/etc/permissions/android.hardware.fingerprint.xml \
++    frameworks/native/data/etc/android.hardware.location.xml:system/etc/permissions/android.hardware.location.xml \
++    frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
+     frameworks/native/data/etc/android.hardware.bluetooth.xml:system/etc/permissions/android.hardware.bluetooth.xml \
+     frameworks/native/data/etc/android.hardware.bluetooth_le.xml:system/etc/permissions/android.hardware.bluetooth_le.xml \
+     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
+-- 
+2.43.0
+

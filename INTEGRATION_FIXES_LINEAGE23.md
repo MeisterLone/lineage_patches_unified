@@ -298,3 +298,14 @@ code remains available.
 - A16 post-integration baseline: `device/phh/treble@50f27fa`
 - Patch SHA-256: `b96bcdecb579a0855ec9147cd571a78d545086851e825c63d8c91e27b6d9a95d`
 - Runtime acceptance: `pm list features` contains no `android.hardware.telephony*`; Wi‑Fi remains declared/working
+
+## 9090 — Advertise confirmed C10 location hardware
+
+Runtime GPS works accurately in Google Earth and fused/network location returns valid fixes, but PackageManager did
+not declare `android.hardware.location`, `.gps`, or `.network`. Missing accurate feature declarations can make Play
+filter applications that require location hardware. The patch installs canonical AOSP location and GPS XMLs.
+
+- Patch: `patches_treble/device_phh_treble/9090-Advertise-working-C10-location-hardware.patch`
+- A16 post-integration baseline: `device/phh/treble@61bca85`
+- Patch SHA-256: `6526f7c360babc25210ad4fb634b4ceba21839ca48418c37953e0a92cf66b06b`
+- Runtime acceptance: `pm list features` includes location, GPS, and network; GPS and Wi-Fi location still work
