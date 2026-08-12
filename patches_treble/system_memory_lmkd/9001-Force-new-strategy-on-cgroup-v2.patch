@@ -1,0 +1,33 @@
+From bdf912725c5b4a06907b7fe966becc29fe439fd1 Mon Sep 17 00:00:00 2001
+From: Paul Nel <paul@fashionpass.com>
+Date: Wed, 12 Aug 2026 00:18:21 +0000
+Subject: [PATCH] lmkd: Force new strategy on cgroup v2
+
+Legacy vendor properties can request the old strategy, but A16 supports only the new PSI strategy on a cgroup v2 memory hierarchy. Fall forward instead of exiting and stalling ActivityManager.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
+Change-Id: Ia83ea2a64855f4487a66e27fa789e88f4c973221
+---
+ lmkd.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lmkd.cpp b/lmkd.cpp
+index b2cc335..cf8e6fe 100644
+--- a/lmkd.cpp
++++ b/lmkd.cpp
+@@ -3587,8 +3587,8 @@ static bool init_psi_monitors() {
+     bool use_new_strategy =
+         GET_LMK_PROPERTY(bool, "use_new_strategy", low_ram_device || !use_minfree_levels);
+     if (!use_new_strategy && memcg_version() != MemcgVersion::kV1) {
+-        ALOGE("Old kill strategy can only be used with v1 cgroup hierarchy");
+-        return false;
++        ALOGW("Old kill strategy is incompatible with cgroup v2; forcing new strategy");
++        use_new_strategy = true;
+     }
+     /* In default PSI mode override stall amounts using system properties */
+     if (use_new_strategy) {
+-- 
+2.43.0
+

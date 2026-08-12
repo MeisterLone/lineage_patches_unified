@@ -260,3 +260,16 @@ root from boot. This is intentionally a debug GSI and already ships `ro.adb.secu
 - Patch SHA-256: `e63aadc20753e784d42e115e069866b8a6d8f206e217357347fd66960e67c891`
 - Patch SHA-256: `9d66ab7ab534e09e04505108b169a198496f7184f9bc27aa0752a9a1ed1ab5c3`
 - Runtime acceptance: initial `adb shell id` is uid 0; Settings rooted-debugging toggle is enabled
+
+## 9001 — Force A16 lmkd new strategy on cgroup v2
+
+The property override was present in the system image but stock vendor's immutable
+`ro.lmk.use_new_strategy=false` still won at runtime. A16 lmkd logged that the old strategy supports only cgroup v1,
+failed its vmpressure fallback, exited every five seconds, and blocked ActivityManager on `LmkdConnection`, causing
+system/SystemUI/phone/GMS/setup ANRs. The patch makes lmkd fall forward to its PSI/new strategy whenever memory
+cgroup is v2, regardless of stale vendor preference. The C10 kernel exposes PSI and cgroup v2.
+
+- Patch: `patches_treble/system_memory_lmkd/9001-Force-new-strategy-on-cgroup-v2.patch`
+- A16 baseline: `system/memory/lmkd@5352c3c`
+- Patch SHA-256: `72a401b4343f2345121d41432a666811ab30c70e8ede3c583037c28c61a520d9`
+- Runtime acceptance: lmkd stays running, socket exists, log says PSI/new strategy, ActivityManager retry storm absent
