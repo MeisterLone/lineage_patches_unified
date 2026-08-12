@@ -285,3 +285,16 @@ persisted and can disable the behavior.
 - A16 post-integration baseline: `packages/modules/adb@a75673bb`
 - Patch SHA-256: `38ebc809a67e74f30536cea837b14de06eebc7d6c986bc88e1c1f6693668268d`
 - Runtime acceptance: first stable post-boot `adb shell id` is uid 0 without issuing `adb root`
+
+## 9080 — Do not advertise cellular hardware on the Wi‑Fi C10
+
+Physical inspection confirmed the external slot is microSD, not SIM. Runtime also reports
+`ro.vendor.sw.embeded.telephony=false`, modem status off, no active subscription, and no modem device node. The TD
+base nevertheless copied GSM/IMS feature XMLs, causing PackageManager, SetupWizard, and Play device configuration to
+classify the tablet as cellular. The patch removes only those two declarations; Telephony framework compatibility
+code remains available.
+
+- Patch: `patches_treble/device_phh_treble/9080-Do-not-advertise-cellular-hardware-on-C10.patch`
+- A16 post-integration baseline: `device/phh/treble@50f27fa`
+- Patch SHA-256: `b96bcdecb579a0855ec9147cd571a78d545086851e825c63d8c91e27b6d9a95d`
+- Runtime acceptance: `pm list features` contains no `android.hardware.telephony*`; Wi‑Fi remains declared/working
